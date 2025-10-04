@@ -1,76 +1,87 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ActiveSky - Outdoor Weather App</title>
-    <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="css/map.css">
-</head>
-<body>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ActiveSky</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+      body { background: #f6f8fa; }
+      .card-img-top { height: 180px; object-fit: cover; }
+      .navbar { background: #fff; border-radius: 12px; margin: 16px; }
+      .main-section { background: #fff; border-radius: 16px; padding: 32px; margin: 24px; }
+      .community-title { font-weight: bold; font-size: 2rem; margin-top: 32px; }
+    </style>
+  </head>
+  <body>
     <!-- Navbar -->
-    <nav class="navbar">
-        <div class="logo">🌤️ ActiveSky</div>
+    <nav class="navbar navbar-expand-lg shadow-sm">
+      <div class="container-fluid">
+        <a class="navbar-brand d-flex align-items-center" href="#">
+          <img src="https://img.icons8.com/fluency/48/000000/cloud.png" alt="Logo" width="32" height="32" class="me-2">
+          <span class="fw-bold">ActiveSky</span>
+        </a>
+        <div>
+          <a href="#" class="btn btn-outline-primary me-2">Registrarse</a>
+          <a href="#" class="btn btn-outline-primary">Iniciar sesión</a>
+        </div>
+      </div>
     </nav>
 
-    <!-- Main Container -->
-    <div class="container">
-        <!-- Hero Section -->
-        <header class="hero">
-            <h1>Planifica tus Actividades Outdoor</h1>
-            <p>Encuentra el clima perfecto para tu próxima aventura</p>
-        </header>
-
-        <!-- Search Form -->
-        <div class="search-card">
-            <form id="searchForm">
-                <!-- Fecha -->
-                <div class="form-group">
-                    <label>📅 ¿Cuándo?</label>
-                    <input type="date" id="dateInput" required>
-                </div>
-
-                <!-- Actividad -->
-                <div class="form-group">
-                    <label>🏃 ¿Qué actividad?</label>
-                    <select id="activitySelect" required>
-                        <option value="">Seleccionar...</option>
-                    </select>
-                </div>
-
-                <!-- Ubicación -->
-                <div class="form-group">
-                    <label>📍 ¿Dónde?</label>
-                    <input type="text" 
-                           id="locationInput" 
-                           placeholder="Ej: Madrid, España"
-                           autocomplete="off"
-                           required>
-                </div>
-
-                <button type="submit" class="btn-primary">
-                    Buscar Clima ☀️
-                </button>
-            </form>
-        </div>
-
-        <!-- Mapa -->
-        <div id="mapContainer">
-            <div id="map"></div>
-        </div>
-
-        <!-- Resultados (se llenan dinámicamente) -->
-        <div id="weatherResults"></div>
+    <!-- Main Section -->
+    <div class="main-section text-center mx-auto" style="max-width: 900px;">
+      <h1 class="fw-bold mb-3" style="font-size:2.5rem;">Tu aventura comienza aquí</h1>
+      <p class="mb-4 text-secondary">
+        ActiveSky te ayuda a encontrar las mejores actividades al aire libre según el clima en tu ubicación.
+        Ya sea que busques una aventura en solitario, un día divertido con la familia o un nuevo desafío deportivo,
+        te conectamos con el momento y lugar perfecto para disfrutar. ¡Explora, comparte y vive al máximo!
+      </p>
+      <a href="#" class="btn btn-info btn-lg text-white fw-bold">Explorar</a>
     </div>
 
-    <!-- Google Maps API -->
-    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places&callback=initMap" async defer></script>
-    
-    <!-- App Scripts -->
-    <script src="js/config.js"></script>
-    <script src="js/utils.js"></script>
-    <script src="js/map.js"></script>
-    <script src="js/weather.js"></script>
-    <script src="js/main.js"></script>
-</body>
+    <!-- Comunidad Section -->
+    <div class="container">
+      <div class="community-title text-center mb-4">Comentarios de la Comunidad</div>
+      <div class="row g-4">
+        <div class="col-md-3">
+          <div class="card h-100 shadow-sm">
+            <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80" class="card-img-top" alt="Senderismo">
+            <div class="card-body">
+              <h5 class="card-title fw-bold">Senderismo al Amanecer</h5>
+              <p class="card-text">¡Una experiencia increíble! El clima era perfecto y la vista desde la cima valió la pena cada paso.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card h-100 shadow-sm">
+            <img src="https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80" class="card-img-top" alt="Bicicleta">
+            <div class="card-body">
+              <h5 class="card-title fw-bold">Ruta en Bicicleta</h5>
+              <p class="card-text">ActiveSky nos avisó del día soleado y aprovechamos para hacer esta ruta. ¡Súper recomendable!</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card h-100 shadow-sm">
+            <img src="https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80" class="card-img-top" alt="Yoga">
+            <div class="card-body">
+              <h5 class="card-title fw-bold">Yoga Matutino</h5>
+              <p class="card-text">Perfecto para empezar el día. El parque estaba tranquilo y el pronóstico acertó completamente.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card h-100 shadow-sm">
+            <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=400&q=80" class="card-img-top" alt="Picnic">
+            <div class="card-body">
+              <h5 class="card-title fw-bold">Picnic en Familia</h5>
+              <p class="card-text">Un día inolvidable con los niños. Gracias a la app evitamos la lluvia que venía más tarde.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
 </html>
