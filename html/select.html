@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ActiveSky</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .map-placeholder {
+      background-color: #e9ecef;
+      height: 400px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px dashed #adb5bd;
+      margin-bottom: 2rem;
+    }
+    .profile-box {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .profile-img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background-color: #ced4da;
+    }
+    .calendar-section {
+      margin-top: 3rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-light bg-light px-4">
+    <span class="navbar-brand mb-0 h1">ActiveSky</span>
+    <div class="profile-box">
+      <div class="profile-img"></div>
+      <span>Usuario Ejemplo</span>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="container my-4">
+    <div class="row">
+      <!-- Sidebar -->
+      <div class="col-md-4">
+        <h6>Selecciona actividades:</h6>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="ninguna">
+          <label class="form-check-label" for="ninguna">Ninguna</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="running">
+          <label class="form-check-label" for="running">Running</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="camping">
+          <label class="form-check-label" for="camping">Camping</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="hiking">
+          <label class="form-check-label" for="hiking">Hiking</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="cycling">
+          <label class="form-check-label" for="cycling">Cycling</label>
+        </div>
+
+        <!-- Calendar Section -->
+        <div class="calendar-section">
+          <h6>Fecha seleccionada:</h6>
+          <input type="date" id="fecha" class="form-control" min="1900-01-01" max="9999-12-31" value="2024-07-01">
+        </div>
+      </div>
+
+      <!-- Map Placeholder -->
+      <div class="col-md-8">
+        <div class="map-placeholder">
+          <span>Espacio reservado para el mapa</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Consult Button -->
+    <div class="text-center">
+      <button class="btn btn-primary">Consultar</button>
+    </div>
+  </div>
+
+</body>
+</html>
