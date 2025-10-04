@@ -19,14 +19,14 @@
     .profile-sidebar {
       background: #fff;
       border-radius: 16px;
-      padding: 24px;
+      padding: 16px;
       width: 300px;
       text-align: center;
       box-shadow: 0 2px 8px rgba(0,0,0,0.04);
     }
     .profile-img {
-      width: 160px;
-      height: 160px;
+      width: 240px;
+      height: 220px;
       border-radius: 24px;
       object-fit: cover;
       margin-bottom: 16px;
@@ -82,7 +82,7 @@
       font-size: 1.2rem;
       margin-bottom: 18px;
     }
-    .activity-card {
+    .activity-btn {
       display: flex;
       align-items: center;
       background: #f6f8fa;
@@ -91,11 +91,15 @@
       padding: 16px 20px;
       margin-bottom: 16px;
       border: 1px solid #e0e0e0;
-      transition: box-shadow 0.2s;
+      transition: box-shadow 0.2s, border-color 0.2s;
+      width: 100%;
+      text-align: left;
+      cursor: pointer;
     }
-    .activity-card:hover {
+    .activity-btn:hover, .activity-btn:focus {
       box-shadow: 0 2px 8px rgba(41,163,239,0.12);
       border-color: #29a3ef;
+      background: #eaf6fd;
     }
     .activity-icon {
       width: 40px;
@@ -166,6 +170,20 @@
       margin-left: 12px;
       margin-top: 6px;
     }
+    /* Modal custom styles */
+    .modal-lg .modal-content {
+      min-height: 350px;
+    }
+    .modal-map-placeholder {
+      width: 100%;
+      height: 220px;
+      background: #eaf6fd;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
     @media (max-width: 900px) {
       .profile-container {
         flex-direction: column;
@@ -184,7 +202,6 @@
     <div class="profile-sidebar">
       <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Profile" class="profile-img">
       <div class="profile-name">Sophia Rodriguez</div>
-      <div class="text-secondary mb-1">Spanish</div>
       <div class="profile-email">sophia.rodriguez@email.com</div>
       <button class="btn btn-outline-info btn-profile"><i class="bi bi-pencil"></i> Edit Profile</button>
       <button class="btn btn-predict"><i class="bi bi-bar-chart"></i> Start New Prediction</button>
@@ -193,38 +210,38 @@
     <div class="profile-main">
       <div class="activities-section">
         <div class="activities-title">Activities</div>
-        <div class="activity-card">
+        <button class="activity-btn" data-bs-toggle="modal" data-bs-target="#activityModal" data-activity="Hiking" data-date="2024-07-20">
           <div class="activity-icon"><i class="bi bi-tree"></i></div>
           <div class="activity-info">
             <div class="activity-name">Hiking</div>
             <div class="activity-date">2024-07-20</div>
           </div>
           <div class="activity-arrow">&gt;</div>
-        </div>
-        <div class="activity-card">
+        </button>
+        <button class="activity-btn" data-bs-toggle="modal" data-bs-target="#activityModal" data-activity="Cycling" data-date="2024-07-15">
           <div class="activity-icon"><i class="bi bi-bicycle"></i></div>
           <div class="activity-info">
             <div class="activity-name">Cycling</div>
             <div class="activity-date">2024-07-15</div>
           </div>
           <div class="activity-arrow">&gt;</div>
-        </div>
-        <div class="activity-card">
+        </button>
+        <button class="activity-btn" data-bs-toggle="modal" data-bs-target="#activityModal" data-activity="Swimming" data-date="2024-07-10">
           <div class="activity-icon"><i class="bi bi-droplet"></i></div>
           <div class="activity-info">
             <div class="activity-name">Swimming</div>
             <div class="activity-date">2024-07-10</div>
           </div>
           <div class="activity-arrow">&gt;</div>
-        </div>
-        <div class="activity-card">
+        </button>
+        <button class="activity-btn" data-bs-toggle="modal" data-bs-target="#activityModal" data-activity="Running" data-date="2024-07-05">
           <div class="activity-icon"><i class="bi bi-person-walking"></i></div>
           <div class="activity-info">
             <div class="activity-name">Running</div>
             <div class="activity-date">2024-07-05</div>
           </div>
           <div class="activity-arrow">&gt;</div>
-        </div>
+        </button>
       </div>
       <div class="comments-section">
         <div class="comments-title">Comments</div>
@@ -255,8 +272,62 @@
       </div>
     </div>
   </div>
+
+  <!-- Modal para actividades -->
+  <div class="modal fade" id="activityModal" tabindex="-1" aria-labelledby="activityModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="activityModalLabel">Activity Details</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row g-3">
+            <!-- Información de la actividad -->
+            <div class="col-md-6">
+              <p><strong>Activity:</strong> <span id="modalActivityName"></span></p>
+              <p><strong>Date:</strong> <span id="modalActivityDate"></span></p>
+              <p><strong>Description:</strong></p>
+              <p id="modalActivityDescription" class="mb-4">No description available.</p>
+            </div>
+            <!-- Espacio para el mapa y botón -->
+            <div class="col-md-6 d-flex flex-column align-items-center">
+              <div class="modal-map-placeholder">
+                <span class="text-secondary">[Aquí irá el mapa]</span>
+              </div>
+              <a href="resultados.html" class="btn btn-info w-100 text-white fw-bold mt-2">Ver Resultados</a>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Bootstrap Icons CDN -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Script para llenar el modal con los datos de la actividad
+    const activityModal = document.getElementById('activityModal');
+    activityModal.addEventListener('show.bs.modal', function (event) {
+      const button = event.relatedTarget;
+      const activity = button.getAttribute('data-activity');
+      const date = button.getAttribute('data-date');
+      document.getElementById('modalActivityName').textContent = activity;
+      document.getElementById('modalActivityDate').textContent = date;
+
+      // Descripciones de ejemplo para cada actividad
+      const descriptions = {
+        Hiking: "Enjoy a scenic hike through beautiful landscapes. Perfect for nature lovers and adventure seekers.",
+        Cycling: "Cycle along picturesque routes and enjoy the fresh air. Suitable for all skill levels.",
+        Swimming: "Take a refreshing swim in the local pool or natural water spots. Great for relaxation and exercise.",
+        Running: "Go for a run in the park or along city trails. Ideal for improving your fitness and clearing your mind."
+      };
+      document.getElementById('modalActivityDescription').textContent = descriptions[activity] || "No description available.";
+    });
+  </script>
 </body>
 </html>
