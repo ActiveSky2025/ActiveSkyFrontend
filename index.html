@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ActiveSky - Outdoor Weather App</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/map.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="logo">🌤️ ActiveSky</div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Hero Section -->
+        <header class="hero">
+            <h1>Planifica tus Actividades Outdoor</h1>
+            <p>Encuentra el clima perfecto para tu próxima aventura</p>
+        </header>
+
+        <!-- Search Form -->
+        <div class="search-card">
+            <form id="searchForm">
+                <!-- Fecha -->
+                <div class="form-group">
+                    <label>📅 ¿Cuándo?</label>
+                    <input type="date" id="dateInput" required>
+                </div>
+
+                <!-- Actividad -->
+                <div class="form-group">
+                    <label>🏃 ¿Qué actividad?</label>
+                    <select id="activitySelect" required>
+                        <option value="">Seleccionar...</option>
+                    </select>
+                </div>
+
+                <!-- Ubicación -->
+                <div class="form-group">
+                    <label>📍 ¿Dónde?</label>
+                    <input type="text" 
+                           id="locationInput" 
+                           placeholder="Ej: Madrid, España"
+                           autocomplete="off"
+                           required>
+                </div>
+
+                <button type="submit" class="btn-primary">
+                    Buscar Clima ☀️
+                </button>
+            </form>
+        </div>
+
+        <!-- Mapa -->
+        <div id="mapContainer">
+            <div id="map"></div>
+        </div>
+
+        <!-- Resultados (se llenan dinámicamente) -->
+        <div id="weatherResults"></div>
+    </div>
+
+    <!-- Google Maps API -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places&callback=initMap" async defer></script>
+    
+    <!-- App Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/map.js"></script>
+    <script src="js/weather.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
