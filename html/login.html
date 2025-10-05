@@ -96,6 +96,10 @@
           max-width: 98vw;
         }
       }
+      .modal-backdrop.blur {
+        backdrop-filter: blur(6px);
+        background: rgba(246, 248, 250, 0.4);
+      }
     </style>
   </head>
   <body>
@@ -150,5 +154,85 @@
       </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
-  </body>
+    <!-- Modal de registro -->
+<div class="modal fade" id="register-modal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="registerModalLabel">Registrarse</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <form id="register-form">
+  <div class="mb-3">
+    <label for="register-username" class="form-label">Usuario</label>
+    <input type="text" class="form-control" id="register-username" required>
+  </div>
+  <div class="mb-3">
+    <label for="register-name" class="form-label">Nombre</label>
+    <input type="text" class="form-control" id="register-name" required>
+  </div>
+  <div class="mb-3">
+    <label for="register-lastname" class="form-label">Apellidos</label>
+    <input type="text" class="form-control" id="register-lastname" required>
+  </div>
+  <div class="mb-3">
+    <label for="register-email" class="form-label">Correo Electrónico</label>
+    <input type="email" class="form-control" id="register-email" required>
+  </div>
+  <div class="mb-3">
+    <label for="register-password" class="form-label">Contraseña</label>
+    <input type="password" class="form-control" id="register-password" required>
+  </div>
+  <button type="submit" class="btn btn-info w-100 text-white">Registrarse</button>
+
+          <div class="mb-2 text-center">
+          <span class="text-secondary">¿Ya tienes una cuenta? <a href="#" class="text-info fw-semibold text-decoration-none">Iniciar sesion</a></span>
+        </div>
+        <div class="divider"></div>
+        <div class="text-center text-secondary mb-2">O registrarse con</div>
+          <div class="social-btns">
+          <button class="social-btn" type="button" id="login-google">
+            <img src="https://img.icons8.com/color/48/google-logo.png" alt="Google" class="social-icon">
+            Google
+          </button>
+          <button class="social-btn" type="button" id="login-facebook">
+            <img src="https://img.icons8.com/color/48/facebook-new.png" alt="Facebook" class="social-icon">
+            Facebook
+          </button>
+        </div>
+        <div class="social-btns mt-2">
+          <button class="social-btn" type="button" id="login-apple">
+            <img src="https://img.icons8.com/ios-filled/50/000000/mac-os.png" alt="Apple" class="social-icon">
+            Apple
+          </button>
+          <button class="social-btn" type="button" id="login-x">
+            <img src="https://img.icons8.com/ios-filled/50/000000/x.png" alt="Twitter" class="social-icon">
+            Twitter
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    if (window.location.hash === "#register-modal") {
+      var registerModal = new bootstrap.Modal(document.getElementById('register-modal'));
+      registerModal.show();
+    }
+    // Blur effect for modal backdrop
+    document.getElementById('register-modal').addEventListener('show.bs.modal', function () {
+      setTimeout(function() {
+        var backdrop = document.querySelector('.modal-backdrop');
+        if (backdrop) backdrop.classList.add('blur');
+      }, 10);
+    });
+    document.getElementById('register-modal').addEventListener('hidden.bs.modal', function () {
+      var backdrop = document.querySelector('.modal-backdrop');
+      if (backdrop) backdrop.classList.remove('blur');
+    });
+  });
+</script>
+</body>
 </html>
