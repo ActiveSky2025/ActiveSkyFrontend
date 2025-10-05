@@ -1,123 +1,722 @@
+/* ============================================
+   ACTIVESKY - ESTILOS GLOBALES
+   ============================================ */
+
 /* Variables CSS */
 :root {
-    --primary: #3b82f6;
-    --secondary: #8b5cf6;
-    --success: #10b981;
-    --warning: #f59e0b;
-    --danger: #ef4444;
-    --dark: #1f2937;
-    --light: #f9fafb;
-    --radius: 12px;
-    --shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+  --primary-color: #0dcaf0;
+  --secondary-color: #667eea;
+  --success-color: #28a745;
+  --warning-color: #ffc107;
+  --danger-color: #dc3545;
+  --light-bg: #f1eded;
+  --white: #ffffff;
+  --gray-100: #f8f9fa;
+  --gray-200: #e9ecef;
+  --gray-300: #dee2e6;
+  --gray-600: #6c757d;
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.08);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.12);
+  --border-radius: 12px;
 }
 
+/* Reset y Base */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    min-height: 100vh;
+  background: var(--light-bg);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
 }
 
-/* Navbar */
+/* ============================================
+   NAVBAR
+   ============================================ */
+
 .navbar {
-    background: white;
-    padding: 1rem 2rem;
-    box-shadow: var(--shadow);
+  background: var(--white);
+  border-radius: var(--border-radius);
+  margin: 16px;
+  box-shadow: var(--shadow-sm);
 }
 
-.logo {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: var(--primary);
+.navbar-brand {
+  font-weight: 700;
+  color: var(--primary-color);
 }
 
-/* Container */
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
+/* ============================================
+   INDEX - LANDING PAGE
+   ============================================ */
+
+.main-section {
+  background: var(--white);
+  border-radius: 16px;
+  padding: 48px 32px;
+  margin: 24px auto;
+  max-width: 900px;
+  box-shadow: var(--shadow-sm);
 }
 
-/* Hero */
-.hero {
-    text-align: center;
-    color: white;
-    margin-bottom: 2rem;
+.main-section h1 {
+  font-size: 2.5rem;
+  color: #333;
 }
 
-.hero h1 {
-    font-size: 2.5rem;
-    margin-bottom: 0.5rem;
+.main-section p {
+  font-size: 1.1rem;
+  line-height: 1.6;
 }
 
-/* Search Card */
-.search-card {
-    background: white;
-    padding: 2rem;
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-    margin-bottom: 2rem;
+/* Feature Cards */
+.feature-card {
+  background: var(--white);
+  border-radius: var(--border-radius);
+  padding: 24px;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.3s, box-shadow 0.3s;
 }
 
-.form-group {
-    margin-bottom: 1.5rem;
+.feature-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-md);
 }
 
-.form-group label {
-    display: block;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-    color: var(--dark);
+.feature-icon {
+  font-size: 3rem;
+  margin-bottom: 16px;
 }
 
-.form-group input,
-.form-group select {
+/* Community Cards */
+.card-hover {
+  transition: transform 0.3s, box-shadow 0.3s;
+  cursor: pointer;
+}
+
+.card-hover:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-md);
+}
+
+.card-img-top {
+  height: 180px;
+  object-fit: cover;
+}
+
+/* ============================================
+   SELECT - SELECCIÓN DE ACTIVIDAD
+   ============================================ */
+
+.select-container {
+  height: calc(100vh - 100px);
+  overflow-y: auto;
+}
+
+/* Mapa */
+#map {
+  background-color: #e9ecef;
+  height: 70vh;
+  width: 100%;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Search Box */
+.search-box {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: var(--shadow-md);
+  border-radius: 24px;
+  border: none;
+  padding: 12px 20px;
+}
+
+.pac-container {
+  z-index: 10000 !important;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-md);
+}
+
+/* Activity Block */
+.activity-block {
+  border: 1px solid var(--gray-300);
+  padding: 1rem;
+  border-radius: var(--border-radius);
+  background-color: var(--gray-100);
+  margin-bottom: 1.5rem;
+}
+
+.form-check-input:checked {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+/* Selected Info */
+.selected-info {
+  background: #d1ecf1;
+  border: 2px solid var(--primary-color);
+  border-radius: var(--border-radius);
+  padding: 16px;
+  margin-bottom: 16px;
+  animation: fadeIn 0.3s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Calendar */
+.calendar-section h6 {
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.flatpickr-calendar.inline {
+  display: block !important;
+  position: relative !important;
+  top: 0 !important;
+  margin-top: 8px;
+  box-shadow: var(--shadow-sm);
+  border-radius: var(--border-radius);
+}
+
+/* Botones de consulta */
+.consultar-btn {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+/* Spot Info Window */
+.spot-info {
+  padding: 12px;
+  min-width: 250px;
+}
+
+.spot-info h6 {
+  margin: 0 0 8px 0;
+  color: #333;
+  font-weight: bold;
+}
+
+.spot-info p {
+  margin: 4px 0;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+/* ============================================
+   RESULTADOS - ANÁLISIS CLIMÁTICO
+   ============================================ */
+
+/* Weather Card */
+.weather-card {
+  background: var(--white);
+  border-radius: var(--border-radius);
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+}
+
+.temp-display {
+  font-size: 3rem;
+  font-weight: bold;
+  color: var(--primary-color);
+  margin: 16px 0;
+}
+
+/* Weather Grid */
+.weather-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.weather-item {
+  background: var(--gray-100);
+  border-radius: var(--border-radius);
+  padding: 16px;
+  text-align: center;
+}
+
+.weather-item strong {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--gray-600);
+  font-size: 0.9rem;
+}
+
+.weather-item div {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+}
+
+/* Recommendation Box */
+.recommendation-box {
+  background: var(--gray-100);
+  border-left: 4px solid var(--primary-color);
+  padding: 16px;
+  border-radius: var(--border-radius);
+}
+
+.recommendation-box.rec-good {
+  background: #d4edda;
+  border-left-color: var(--success-color);
+}
+
+.recommendation-box.rec-warning {
+  background: #fff3cd;
+  border-left-color: var(--warning-color);
+}
+
+.recommendation-box.rec-danger {
+  background: #f8d7da;
+  border-left-color: var(--danger-color);
+}
+
+/* Metadata Box */
+.metadata-box {
+  background: var(--gray-100);
+  border-radius: var(--border-radius);
+  padding: 20px;
+  margin-top: 16px;
+}
+
+.metadata-box h6 {
+  margin-bottom: 12px;
+  font-weight: bold;
+}
+
+.metadata-box p {
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+}
+
+/* Spot Detail Card */
+.spot-detail-card {
+  background: var(--white);
+  border-radius: var(--border-radius);
+  padding: 16px;
+  box-shadow: var(--shadow-sm);
+}
+
+/* Result Map */
+.result-map {
+  height: 300px;
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+/* Color classes */
+.text-success { color: var(--success-color) !important; }
+.text-warning { color: var(--warning-color) !important; }
+.text-danger { color: var(--danger-color) !important; }
+
+/* ============================================
+   LOGIN - AUTENTICACIÓN
+   ============================================ */
+
+.login-body {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+}
+
+.login-container {
+  min-height: calc(100vh - 80px);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 24px;
+}
+
+.login-image {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  height: 100vh;
+  position: relative;
+}
+
+.login-image img {
+  max-height: 60vh;
+  height: 60vh;
+  border-radius: 0 24px 24px 0;
+  box-shadow: var(--shadow-md);
+  object-fit: cover;
+}
+
+.login-card {
+  background: var(--white);
+  border-radius: 16px;
+  padding: 32px 24px;
+  max-width: 480px;
+  width: 100%;
+  box-shadow: var(--shadow-md);
+  margin: 16px 100px 16px 0;
+}
+
+.btn-login {
+  border-radius: 24px;
+  font-weight: bold;
+  padding: 12px 0;
+}
+
+.social-btns {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+.social-btn {
+  flex: 1;
+  border-radius: 24px;
+  background: var(--gray-100);
+  border: 1px solid var(--gray-300);
+  padding: 10px;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.social-btn:hover {
+  background: var(--gray-200);
+  transform: translateY(-2px);
+}
+
+.divider {
+  border-top: 1px solid var(--gray-300);
+  margin: 20px 0;
+}
+
+/* ============================================
+   PERFIL - USUARIO
+   ============================================ */
+
+.profile-container {
+  max-width: 1300px;
+  margin: 32px auto;
+  background: var(--gray-100);
+  border-radius: 16px;
+  box-shadow: var(--shadow-sm);
+  padding: 32px;
+  display: flex;
+  gap: 32px;
+}
+
+.profile-sidebar {
+  background: var(--white);
+  border-radius: 16px;
+  padding: 24px;
+  width: 300px;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+}
+
+.profile-img {
+  width: 200px;
+  height: 200px;
+  border-radius: 16px;
+  object-fit: cover;
+  margin-bottom: 16px;
+  border: 4px solid var(--gray-200);
+}
+
+.profile-name {
+  font-weight: bold;
+  font-size: 1.4rem;
+  margin-bottom: 8px;
+}
+
+.profile-email {
+  color: var(--primary-color);
+  font-size: 0.95rem;
+  margin-bottom: 20px;
+  word-break: break-all;
+}
+
+.btn-profile {
+  border-radius: 24px;
+  width: 100%;
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+
+.btn-predict {
+  border-radius: 24px;
+  width: 100%;
+  font-weight: 500;
+  background: var(--primary-color);
+  color: var(--white);
+  border: none;
+  padding: 10px;
+  transition: all 0.3s;
+}
+
+.btn-predict:hover {
+  background: #0bb8db;
+  transform: translateY(-2px);
+}
+
+.delete-account {
+  color: var(--danger-color);
+  font-size: 0.9rem;
+  cursor: pointer;
+  margin-top: 12px;
+  display: block;
+  transition: color 0.2s;
+}
+
+.delete-account:hover {
+  color: #bd2130;
+  text-decoration: underline;
+}
+
+.profile-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.activities-section,
+.comments-section {
+  background: var(--white);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+}
+
+/* Activity Card */
+.activity-card {
+  background: var(--gray-100);
+  border-radius: var(--border-radius);
+  padding: 16px;
+  margin-bottom: 12px;
+  transition: all 0.2s;
+}
+
+.activity-card:hover {
+  background: #e2f0f9;
+  transform: translateX(4px);
+}
+
+.activity-icon {
+  width: 48px;
+  height: 48px;
+  background: var(--primary-color);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  margin-right: 16px;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 992px) {
+  .login-image {
+    display: none !important;
+  }
+  
+  .login-container {
+    justify-content: center;
+  }
+  
+  .login-card {
+    margin: 16px;
+  }
+  
+  .profile-container {
+    flex-direction: column;
+    padding: 16px;
+  }
+  
+  .profile-sidebar {
     width: 100%;
-    padding: 0.75rem;
-    border: 2px solid #e5e7eb;
-    border-radius: 8px;
-    font-size: 1rem;
-    transition: border 0.3s;
+  }
+  
+  .weather-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
-.form-group input:focus,
-.form-group select:focus {
-    outline: none;
-    border-color: var(--primary);
-}
-
-/* Buttons */
-.btn-primary {
-    width: 100%;
-    padding: 1rem;
-    background: var(--primary);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-size: 1.1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s;
-}
-
-.btn-primary:hover {
-    background: #2563eb;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 12px -2px rgba(59, 130, 246, 0.4);
-}
-
-/* Responsive */
 @media (max-width: 768px) {
-    .hero h1 {
-        font-size: 1.8rem;
-    }
-    
-    .search-card {
-        padding: 1.5rem;
-    }
+  .main-section h1 {
+    font-size: 2rem;
+  }
+  
+  .temp-display {
+    font-size: 2.5rem;
+  }
+  
+  .select-container {
+    padding: 8px;
+  }
+  
+  #map {
+    height: 50vh;
+  }
+}
+
+/* ============================================
+   UTILIDADES
+   ============================================ */
+
+.shadow-sm { box-shadow: var(--shadow-sm); }
+.shadow-md { box-shadow: var(--shadow-md); }
+
+.fw-bold { font-weight: 700; }
+.fw-semibold { font-weight: 600; }
+
+.rounded-lg { border-radius: var(--border-radius); }
+
+/* Spinner */
+.spinner-border {
+  width: 3rem;
+  height: 3rem;
+  border-width: 0.3em;
+}
+
+/* ============================================
+   SPOT DETAIL - Estilos adicionales
+   ============================================ */
+
+.star-rating-input {
+  display: flex;
+  gap: 8px;
+  font-size: 2rem;
+  margin: 12px 0;
+}
+
+.star-rating-input .star {
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #ddd;
+}
+
+.star-rating-input .star:hover {
+  transform: scale(1.2);
+}
+
+.hover-bg:hover {
+  background: var(--gray-100);
+}
+
+/* Responsive para spot detail */
+@media (max-width: 768px) {
+  .spot-hero {
+    height: 250px;
+  }
+
+  .spot-hero-title {
+    font-size: 1.8rem;
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+  }
+
+  .action-buttons button {
+    width: 100%;
+  }
+}
+
+/* ============================================
+   SELECT - Mejoras visuales para markers
+   ============================================ */
+
+/* Spot info window más grande */
+.gm-style .gm-style-iw-c {
+  padding: 12px !important;
+  border-radius: 12px !important;
+  min-width: 280px !important;
+}
+
+.gm-style .gm-style-iw-d {
+  overflow: auto !important;
+  max-height: 400px !important;
+}
+
+/* Info window content */
+.spot-info {
+  padding: 4px;
+}
+
+.spot-info h6 {
+  font-size: 1.1rem;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.spot-info p {
+  font-size: 0.9rem;
+  margin-bottom: 6px;
+  color: #666;
+}
+
+.spot-info small {
+  font-size: 0.85rem;
+  color: #999;
+}
+
+/* Hint visual en el mapa */
+.map-hint {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(13, 202, 240, 0.95);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 24px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  animation: slideUp 0.5s ease-out;
+  pointer-events: none;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* Mejorar apariencia de botones en info window */
+.spot-info .btn {
+  font-size: 0.9rem;
+  padding: 8px 16px;
+  font-weight: 600;
 }

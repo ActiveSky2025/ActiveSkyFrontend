@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/png" sizes="32x32" href="../assets/images/logo.jpg">
+  <title>ActiveSky - Seleccionar Actividad</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg shadow-sm">
+    <div class="container-fluid">
+      <a class="navbar-brand d-flex align-items-center" href="index.html">
+        <img src="../assets/images/logo.jpg" alt="Logo" width="32" height="32" class="me-2">
+        <span class="fw-bold">ActiveSky</span>
+      </a>
+      <div id="nav-auth">
+        <a href="login.html" class="btn btn-outline-primary me-2">Registrarse</a>
+        <a href="login.html" class="btn btn-outline-primary">Iniciar sesión</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="container my-4 select-container">
+    <div class="row">
+      <!-- Sidebar -->
+      <div class="col-md-4">
+        <!-- Información seleccionada -->
+        <div id="selected-info" class="selected-info" style="display: none;">
+          <h6 class="mb-2">📍 Selección actual:</h6>
+          <p class="mb-1"><strong>Actividad:</strong> <span id="info-activity">-</span></p>
+          <p class="mb-1"><strong>Fecha:</strong> <span id="info-date">-</span></p>
+          <p class="mb-1"><strong>Lugar:</strong> <span id="info-spot">-</span></p>
+          <small class="text-muted">
+            Lat: <span id="info-lat">-</span>, Lon: <span id="info-lon">-</span>
+          </small>
+        </div>
+
+        <!-- Actividades -->
+        <div class="activity-block">
+          <h6>Selecciona una actividad:</h6>
+          <div class="form-check">
+            <input class="form-check-input activity-checkbox" type="radio" name="activity" id="running" value="running">
+            <label class="form-check-label" for="running">🏃 Running</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input activity-checkbox" type="radio" name="activity" id="cycling" value="cycling">
+            <label class="form-check-label" for="cycling">🚴 Ciclismo</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input activity-checkbox" type="radio" name="activity" id="hiking" value="hiking">
+            <label class="form-check-label" for="hiking">🥾 Hiking</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input activity-checkbox" type="radio" name="activity" id="fishing" value="fishing">
+            <label class="form-check-label" for="fishing">🎣 Pesca</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input activity-checkbox" type="radio" name="activity" id="camping" value="camping">
+            <label class="form-check-label" for="camping">⛺ Camping</label>
+          </div>
+        </div>
+
+        <!-- Calendar -->
+        <div class="calendar-section">
+          <h6>Fecha de la actividad:</h6>
+          <input type="text" id="fecha" class="form-control mb-2" placeholder="Selecciona la fecha" readonly>
+          <div id="calendar-inline"></div>
+        </div>
+      </div>
+
+      <!-- Map -->
+      <div class="col-md-8">
+        <div style="position: relative;">
+          <input 
+            type="text" 
+            id="search-input" 
+            class="form-control search-box" 
+            placeholder="🔍 Buscar lugar..."
+          >
+          <div id="map"></div>
+        </div>
+
+        <!-- Botones -->
+        <div class="consultar-btn mt-3">
+          <button class="btn btn-secondary" id="btn-reset">🔄 Limpiar</button>
+          <button class="btn btn-primary" id="btn-consultar" disabled>🌦️ Consultar Clima</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="../js/config.js"></script>
+  <script>
+    // Cargar Google Maps dinámicamente con la key del config
+    const script = document.createElement('script');
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${CONFIG.GOOGLE_MAPS_KEY}&libraries=places&callback=initMap`;
+    script.async = true;
+    script.defer = true;
+    document.head.appendChild(script);
+  </script>
+  <script src="../js/select.js"></script>
+</body>
+</html>
