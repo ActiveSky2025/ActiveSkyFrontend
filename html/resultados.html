@@ -4,150 +4,128 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Resultados - ActiveSky</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="icon" type="image/png" sizes="32x32" href="../assets/images/logo.jpg">
-  <style>
-
-    body {background: #f1eded;}
-
-    .map-placeholder {
-      background-color: #e9ecef;
-      height: 300px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 2px dashed #adb5bd;
-      margin-bottom: 2rem;
-    }
-    .profile-box {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      margin-top: 1rem;
-    }
-    .profile-img {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      background-color: #ced4da;
-    }
-    .weather-box {
-      background-color: #f8f9fa;
-      border: 1px solid #dee2e6;
-      padding: 1rem;
-      border-radius: 0.5rem;
-      max-height: 400px;
-      overflow-y: auto;
-    }
-    .temp-priority {
-      font-size: 2rem;
-      font-weight: bold;
-      color: #dc3545;
-    }
-    .secondary-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 1rem;
-      margin-top: 1rem;
-    }
-    .secondary-box {
-      background-color: #ffffff;
-      border: 1px solid #dee2e6;
-      border-radius: 0.5rem;
-      padding: 0.75rem;
-      text-align: center;
-      font-size: 0.9rem;
-      color: #6c757d;
-    }
-    .activity-box {
-      background-color: #e2f0d9;
-      border-left: 5px solid #198754;
-      padding: 1rem;
-      border-radius: 0.5rem;
-    }
-    .logo-img {
-      height: 40px;
-      margin-right: 10px;
-    }
-
-    .navbar { background: #fff; border-radius: 12px; margin: 16px; }
-
-  </style>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
 </head>
 <body>
-
   <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg shadow-sm">
-      <div class="container-fluid">
-        <a class="navbar-brand d-flex align-items-center" href="../html/index.html">
-          <img src="../assets/images/logo.jpg" alt="Logo" width="32" height="32" class="me-2">
-          <span class="fw-bold">ActiveSky</span>
-        </a>
-        <div id="nav-auth">
-          <a href="login.html#register-modal" class="btn btn-outline-primary me-2" id="btn-registrarse">Registrarse</a>
-          <a href="login.html" class="btn btn-outline-primary">Iniciar sesión</a>
-        </div>
+  <nav class="navbar navbar-expand-lg shadow-sm">
+    <div class="container-fluid">
+      <a class="navbar-brand d-flex align-items-center" href="index.html">
+        <img src="../assets/images/logo.jpg" alt="Logo" width="32" height="32" class="me-2">
+        <span class="fw-bold">ActiveSky</span>
+      </a>
+      <div id="nav-auth">
+        <a href="login.html" class="btn btn-outline-primary me-2">Registrarse</a>
+        <a href="login.html" class="btn btn-outline-primary">Iniciar sesión</a>
       </div>
-    </nav>
+    </div>
+  </nav>
 
   <!-- Main Content -->
   <div class="container my-4">
+    <!-- Header con botón de editar -->
     <div class="d-flex justify-content-between align-items-center mb-3">
-      <h4 class="mb-0">Parque Nacional de Yosemite, CA - Viernes 5 de julio de 2024</h4>
-      <a href="../html/select.html">
-      <button class="btn btn-primary btn-sm">Editar información</button>
-      </a>
+      <h4 id="result-title" class="mb-0">Cargando resultados...</h4>
+      <a href="select.html" class="btn btn-outline-primary btn-sm">✏️ Editar</a>
     </div>
 
-    <div class="row">
-      <!-- Left Column -->
-      <div class="col-md-8">
-        <!-- Unified Weather Section -->
-        <div class="weather-box mb-4">
-          <div class="text-center">
-            <div class="temp-priority">Máx: 25°C / Mín: 18°C</div>
-            <p class="mb-1">Mayormente Soleado <img src="../assets/icons/soleado.png" alt=""></p>
-          </div>
-
-          <!-- Secondary Weather Data in Grid -->
-          <div class="secondary-grid">
-            <div class="secondary-box"><strong>Humedad</strong><br>30%</div>
-            <div class="secondary-box"><strong>Viento</strong><br>10 km/h</div>
-            <div class="secondary-box"><strong>Índice UV</strong><br>6 (Moderado)</div>
-            <div class="secondary-box"><strong>Precipitación</strong><br>0%</div>
-          </div>
-        </div>
-
-        <!-- Activity Recommendation -->
-        <div class="activity-box mb-4">
-          <h5>¡Día perfecto para una caminata! 🥾</h5>
-          <p>El clima es ideal para caminar al aire libre. Cielos despejados y una temperatura agradable.</p>
-          <button class="btn btn-success">Guardar Datos</button>
-        </div>
+    <!-- Loading State -->
+    <div id="loading-state" class="text-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando...</span>
       </div>
+      <p class="mt-3">Analizando 30 años de datos climáticos...</p>
+    </div>
 
-      <!-- Right Column -->
-      <div class="col-md-4">
-        <!-- Evaluate Another Activity -->
-        <div class="mb-4">
-          <label for="actividad" class="form-label">Evaluar otra actividad:</label>
-          <select id="actividad" class="form-select mb-2">
-            <option selected>Ciclismo</option>
-            <option>Camping</option>
-            <option>Running</option>
-            <option>Escalada</option>
-          </select>
-          <button class="btn btn-primary w-100">Evaluar</button>
+    <!-- Error State -->
+    <div id="error-state" class="alert alert-danger" style="display: none;">
+      <h5>❌ Error al cargar datos</h5>
+      <p id="error-message"></p>
+      <a href="select.html" class="btn btn-primary">Volver a intentar</a>
+    </div>
+
+    <!-- Results -->
+    <div id="results-content" style="display: none;">
+      <div class="row">
+        <!-- Columna izquierda -->
+        <div class="col-md-8">
+          <!-- Clima principal -->
+          <div class="weather-card mb-4">
+            <div class="text-center">
+              <h2 id="temp-display" class="temp-display">--°C</h2>
+              <p id="weather-desc" class="mb-2">--</p>
+            </div>
+
+            <!-- Grid de datos secundarios -->
+            <div class="weather-grid">
+              <div class="weather-item">
+                <strong>💧 Precipitación</strong>
+                <div id="precipitation-prob">--%</div>
+              </div>
+              <div class="weather-item">
+                <strong>💨 Viento</strong>
+                <div id="wind-speed">-- m/s</div>
+              </div>
+              <div class="weather-item">
+                <strong>☁️ Nubosidad</strong>
+                <div id="cloud-coverage">--%</div>
+              </div>
+              <div class="weather-item">
+                <strong>☀️ Índice UV</strong>
+                <div id="uv-index">--</div>
+              </div>
+            </div>
+
+            <!-- Recomendación -->
+            <div id="recommendation-box" class="recommendation-box mt-3">
+              <h6>💡 Recomendación</h6>
+              <p id="recommendation-text">--</p>
+            </div>
+          </div>
+
+          <!-- Metadata de NASA -->
+          <div class="metadata-box">
+            <h6>📊 Fuente de Datos</h6>
+            <p><strong>API:</strong> <span id="data-source">NASA POWER API v2.0</span></p>
+            <p><strong>Años analizados:</strong> <span id="years-analyzed">30 años</span></p>
+            <p><strong>Puntos de datos:</strong> <span id="data-points">--</span></p>
+            <button class="btn btn-sm btn-outline-primary" id="btn-download-json">📥 Descargar JSON</button>
+            <button class="btn btn-sm btn-outline-primary" id="btn-download-csv">📥 Descargar CSV</button>
+          </div>
         </div>
 
-        <!-- Map Placeholder -->
-        <div class="map-placeholder">
-          <span>Espacio reservado para el mapa</span>
+        <!-- Columna derecha -->
+        <div class="col-md-4">
+          <!-- Detalles del spot -->
+          <div class="spot-detail-card mb-3">
+            <h6>📍 Lugar seleccionado</h6>
+            <p id="spot-name" class="fw-bold">--</p>
+            <small id="spot-coords" class="text-muted">--</small>
+          </div>
+
+          <!-- Mapa pequeño -->
+          <div id="result-map" class="result-map mb-3"></div>
+
+          <!-- Botones de acción -->
+          <button class="btn btn-success w-100 mb-2" id="btn-save-visit">💾 Guardar Visita</button>
+          <button class="btn btn-outline-primary w-100" id="btn-add-review">⭐ Dejar Reseña</button>
         </div>
       </div>
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../js/config.js"></script>
+  <script>
+    // Cargar Google Maps para el mapa pequeño
+    const script = document.createElement('script');
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${CONFIG.GOOGLE_MAPS_KEY}&callback=initResultMap`;
+    script.async = true;
+    script.defer = true;
+    document.head.appendChild(script);
+  </script>
+  <script src="../js/resultados.js"></script>
 </body>
 </html>

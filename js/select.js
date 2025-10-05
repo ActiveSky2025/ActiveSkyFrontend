@@ -1,14 +1,15 @@
 // ============================================
-// CONFIGURACIÓN INICIAL
+// SELECT.JS - Selección de actividad y lugar
 // ============================================
 
-const API_BASE_URL = 'http://localhost:8000/api';
+const API_BASE_URL = CONFIG.API_BASE_URL;
 let map;
 let markers = [];
+let customMarker = null; // Marker personalizado del usuario
 let selectedSpot = null;
 let selectedActivity = null;
 let selectedDate = null;
-let selectedCoordinates = null; // String "lat,lon"
+let selectedCoordinates = null;
 let infoWindow;
 let searchBox;
 let flatpickrInstance;
@@ -17,13 +18,16 @@ let flatpickrInstance;
 // INICIALIZAR MAPA
 // ============================================
 
-function initMap() {
-  // Ubicación inicial (CDMX por defecto)
-  const defaultLocation = { lat: 19.4326, lng: -99.1332 };
+document.addEventListener('DOMContentLoaded', () => {
+  checkUserSession();
+});
 
-  // Crear mapa
+
+function initMap() {
+  const defaultLocation = CONFIG.DEFAULT_LOCATION;
+
   map = new google.maps.Map(document.getElementById('map'), {
-    center: defaultLocation,
+    center: { lat: defaultLocation.lat, lng: defaultLocation.lng },
     zoom: 12,
     mapTypeControl: true,
     streetViewControl: false,
@@ -37,33 +41,228 @@ function initMap() {
     ]
   });
 
-  // Info Window para mostrar detalles
   infoWindow = new google.maps.InfoWindow();
-
-  // Configurar búsqueda de lugares
   setupSearchBox();
-
-  // Intentar obtener ubicación del usuario
   getUserLocation();
-
-  // Event listeners
   setupEventListeners();
+  
+  // ⭐ NUEVO: Permitir click en el mapa
+  setupMapClickListener();
 }
 
 // ============================================
-// BÚSQUEDA DE LUGARES (Google Places)
+// ⭐ NUEVO: CLICK EN EL MAPA
+// ============================================
+
+function setupMapClickListener() {
+  map.addListener('click', (event) => {
+    if (!selectedActivity) {
+      alert('⚠️ Por favor selecciona una actividad primero');
+      return;
+    }
+
+    const lat = event.latLng.lat();
+    const lon = event.latLng.lng();
+
+    // Mostrar confirmación con coordenadas
+    showCustomLocationConfirmation(lat, lon, event.latLng);
+  });
+}
+
+// ============================================
+// ⭐ NUEVO: CONFIRMAR UBICACIÓN PERSONALIZADA
+// ============================================
+
+function showCustomLocationConfirmation(lat, lon, latLng) {
+  // Limpiar marker personalizado anterior
+  if (customMarker) {
+    customMarker.setMap(null);
+  }
+
+  // Crear marker temporal en el punto clickeado
+  customMarker = new google.maps.Marker({
+    position: latLng,
+    map: map,
+    animation: google.maps.Animation.DROP,
+    icon: {
+      path: google.maps.SymbolPath.CIRCLE,
+      scale: 12,
+      fillColor: '#FF5722',
+      fillOpacity: 1,
+      strokeColor: '#ffffff',
+      strokeWeight: 3
+    }
+  });
+
+  // Info window para confirmar
+  const activityName = CONFIG.ACTIVITIES[selectedActivity].name;
+  const activityIcon = CONFIG.ACTIVITIES[selectedActivity].icon;
+
+  const content = `
+    <div class="spot-info">
+      <h6>📍 Ubicación Personalizada</h6>
+      <p><strong>Actividad:</strong> ${activityIcon} ${activityName}</p>
+      <p class="mb-1"><small>Lat: ${lat.toFixed(6)}</small></p>
+      <p class="mb-2"><small>Lon: ${lon.toFixed(6)}</small></p>
+      <button class="btn btn-sm btn-success w-100 mb-2" onclick="selectCustomLocation(${lat}, ${lon}, '${activityName}')">
+        ✅ Usar esta ubicación
+      </button>
+      <button class="btn btn-sm btn-outline-secondary w-100" onclick="cancelCustomLocation()">
+        ❌ Cancelar
+      </button>
+    </div>
+  `;
+
+  infoWindow.setContent(content);
+  infoWindow.setPosition(latLng);
+  infoWindow.open(map);
+
+  console.log('📍 Punto clickeado:', { lat, lon });
+}
+
+// ============================================
+// ⭐ NUEVO: SELECCIONAR UBICACIÓN PERSONALIZADA
+// ============================================
+
+async function selectCustomLocation(lat, lon, activityName) {
+  try {
+    // Mostrar loading
+    infoWindow.setContent(`
+      <div class="spot-info">
+        <h6>📍 Creando ubicación...</h6>
+        <p>⏳ Guardando en la base de datos...</p>
+      </div>
+    `);
+
+    // Obtener user_id si existe
+    const userString = localStorage.getItem(CONFIG.STORAGE_KEYS.USER);
+    const user = userString ? JSON.parse(userString) : null;
+    const userId = user?.id || null;
+
+    // Crear el spot en la base de datos
+    const spotData = {
+      name: `Ubicación personalizada - ${activityName}`,
+      description: `Spot personalizado para ${activityName} creado por el usuario`,
+      latitude: lat,
+      longitude: lon,
+      activity_id: CONFIG.ACTIVITIES[selectedActivity].id,
+      address: `Lat: ${lat.toFixed(6)}, Lon: ${lon.toFixed(6)}`,
+      city: "Ubicación personalizada",
+      country: "Usuario"
+    };
+
+    // Construir URL con user_id si existe
+    const url = userId 
+      ? `${API_BASE_URL}/spots?user_id=${userId}`
+      : `${API_BASE_URL}/spots`;
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(spotData)
+    });
+
+    if (!response.ok) {
+      throw new Error(`Error ${response.status}: ${response.statusText}`);
+    }
+
+    const result = await response.json();
+    console.log('✅ Spot creado en la base de datos:', result);
+
+    // Usar el ID real devuelto por la API
+    const realSpotId = result.spot?.id || result.id;
+    
+    if (!realSpotId) {
+      throw new Error('No se recibió ID del spot creado');
+    }
+
+    selectedSpot = {
+      id: realSpotId, // ⭐ IMPORTANTE: Usar el ID real de la base de datos
+      name: spotData.name,
+      lat: lat,
+      lon: lon,
+      isCustom: true
+    };
+
+    selectedCoordinates = `${lat},${lon}`;
+
+    console.log('✅ Ubicación personalizada seleccionada con ID real:', selectedSpot);
+    console.log('📍 Coordenadas:', selectedCoordinates);
+
+    // Cambiar icono del marker a confirmar selección
+    if (customMarker) {
+      customMarker.setIcon({
+        path: google.maps.SymbolPath.CIRCLE,
+        scale: 12,
+        fillColor: '#4CAF50', // Verde para confirmar
+        fillOpacity: 1,
+        strokeColor: '#ffffff',
+        strokeWeight: 3
+      });
+    }
+
+    // Mostrar confirmación
+    infoWindow.setContent(`
+      <div class="spot-info">
+        <h6>✅ Ubicación guardada</h6>
+        <p><strong>${spotData.name}</strong></p>
+        <p class="mb-1"><small>ID: ${realSpotId}</small></p>
+        <p class="mb-2"><small>📍 ${lat.toFixed(6)}, ${lon.toFixed(6)}</small></p>
+        <button class="btn btn-sm btn-success w-100" onclick="closeInfoWindow()">
+          👍 Continuar
+        </button>
+      </div>
+    `);
+
+    updateSelectionInfo();
+    checkReadyToConsult();
+
+  } catch (error) {
+    console.error('❌ Error creando spot personalizado:', error);
+    
+    // Mostrar error al usuario
+    infoWindow.setContent(`
+      <div class="spot-info">
+        <h6>❌ Error</h6>
+        <p>No se pudo guardar la ubicación en la base de datos.</p>
+        <p class="mb-2"><small>${error.message}</small></p>
+        <button class="btn btn-sm btn-warning w-100 mb-2" onclick="selectCustomLocation(${lat}, ${lon}, '${activityName}')">
+          🔄 Reintentar
+        </button>
+        <button class="btn btn-sm btn-outline-secondary w-100" onclick="cancelCustomLocation()">
+          ❌ Cancelar
+        </button>
+      </div>
+    `);
+  }
+}
+
+// ============================================
+// ⭐ NUEVO: CANCELAR UBICACIÓN PERSONALIZADA
+// ============================================
+
+function cancelCustomLocation() {
+  if (customMarker) {
+    customMarker.setMap(null);
+    customMarker = null;
+  }
+  infoWindow.close();
+}
+
+// ============================================
+// BÚSQUEDA DE LUGARES
 // ============================================
 
 function setupSearchBox() {
   const input = document.getElementById('search-input');
   searchBox = new google.maps.places.SearchBox(input);
 
-  // Bias resultados al viewport actual
   map.addListener('bounds_changed', () => {
     searchBox.setBounds(map.getBounds());
   });
 
-  // Listener cuando usuario selecciona un lugar
   searchBox.addListener('places_changed', () => {
     const places = searchBox.getPlaces();
     if (places.length === 0) return;
@@ -71,11 +270,9 @@ function setupSearchBox() {
     const place = places[0];
     if (!place.geometry || !place.geometry.location) return;
 
-    // Centrar mapa en el lugar buscado
     map.setCenter(place.geometry.location);
     map.setZoom(14);
 
-    // Cargar spots cercanos si hay actividad seleccionada
     if (selectedActivity) {
       loadNearbySpots(
         place.geometry.location.lat(),
@@ -100,7 +297,6 @@ function getUserLocation() {
         
         map.setCenter(userLocation);
         
-        // Agregar marker de ubicación del usuario
         new google.maps.Marker({
           position: userLocation,
           map: map,
@@ -115,7 +311,7 @@ function getUserLocation() {
           title: 'Tu ubicación'
         });
 
-        // Si hay actividad seleccionada, cargar spots
+        // ⭐ CARGAR SPOTS AUTOMÁTICAMENTE si hay actividad
         if (selectedActivity) {
           loadNearbySpots(userLocation.lat, userLocation.lng);
         }
@@ -133,20 +329,16 @@ function getUserLocation() {
 
 async function loadNearbySpots(lat, lon) {
   if (!selectedActivity) {
-    alert('Por favor selecciona una actividad primero');
     return;
   }
 
   try {
-    // Limpiar markers anteriores
     clearMarkers();
 
-    // Obtener ID de actividad
-    const activityId = getActivityId(selectedActivity);
+    const activityId = CONFIG.ACTIVITIES[selectedActivity].id;
 
-    // Llamar a API
     const response = await fetch(
-      `${API_BASE_URL}/spots/nearby?lat=${lat}&lon=${lon}&radius_km=10&activity_id=${activityId}`
+      `${API_BASE_URL}/spots/nearby?lat=${lat}&lon=${lon}&radius_km=${CONFIG.SEARCH_RADIUS_KM}&activity_id=${activityId}`
     );
 
     if (!response.ok) {
@@ -156,11 +348,15 @@ async function loadNearbySpots(lat, lon) {
     const data = await response.json();
     const spots = data.spots;
 
+    console.log(`📍 Encontrados ${spots.length} spots de ${CONFIG.ACTIVITIES[selectedActivity].name}`);
+
     if (spots.length === 0) {
+      // ⭐ MEJORADO: Mensaje cuando no hay spots
       infoWindow.setContent(`
         <div class="spot-info">
-          <h6>No hay spots de ${selectedActivity} cercanos</h6>
-          <p>Intenta buscar en otra ubicación o crea uno nuevo</p>
+          <h6>No hay spots de ${CONFIG.ACTIVITIES[selectedActivity].name} cercanos</h6>
+          <p class="mb-2">💡 Puedes hacer click en el mapa para seleccionar una ubicación personalizada</p>
+          <button class="btn btn-sm btn-info w-100" onclick="closeInfoWindow()">Entendido</button>
         </div>
       `);
       infoWindow.setPosition({ lat, lng: lon });
@@ -168,14 +364,16 @@ async function loadNearbySpots(lat, lon) {
       return;
     }
 
-    // Crear markers para cada spot
+    // ⭐ CREAR MARKERS PARA CADA SPOT
     spots.forEach(spot => {
       createSpotMarker(spot);
     });
 
   } catch (error) {
     console.error('Error cargando spots:', error);
-    alert('Error al cargar lugares. Verifica que el backend esté corriendo en http://localhost:8000');
+    
+    // ⭐ MEJORADO: No mostrar alert, solo mensaje en consola
+    console.warn('No se pudieron cargar spots. Puedes hacer click en el mapa para seleccionar ubicación.');
   }
 }
 
@@ -184,7 +382,7 @@ async function loadNearbySpots(lat, lon) {
 // ============================================
 
 function createSpotMarker(spot) {
-  const activityIcon = getActivityIcon(selectedActivity);
+  const activityIcon = CONFIG.ACTIVITIES[selectedActivity].icon;
 
   const marker = new google.maps.Marker({
     position: { lat: spot.latitude, lng: spot.longitude },
@@ -192,9 +390,12 @@ function createSpotMarker(spot) {
     title: spot.name,
     label: {
       text: activityIcon,
-      fontSize: '24px'
+      fontSize: '28px',
+      fontWeight: 'bold'
     },
-    animation: google.maps.Animation.DROP
+    animation: google.maps.Animation.DROP,
+    // ⭐ MEJORADO: Agregar z-index para que estén por encima
+    zIndex: 100
   });
 
   // Click en marker muestra info
@@ -215,9 +416,9 @@ function showSpotInfo(spot, marker) {
       <h6>${spot.name}</h6>
       <p>${spot.description || 'Sin descripción'}</p>
       <p class="mb-1"><small>📍 ${spot.city || ''}, ${spot.country || ''}</small></p>
-      <p class="mb-2"><small>⭐ Rating: ${spot.rating_avg || 'N/A'} (${spot.total_reviews || 0} reseñas)</small></p>
-      <button class="btn btn-sm btn-info btn-select-spot text-white" onclick="selectSpot('${spot.id}', '${spot.name}', ${spot.latitude}, ${spot.longitude})">
-        Seleccionar este lugar
+      <p class="mb-2"><small>⭐ ${spot.rating_avg || 'N/A'} (${spot.total_reviews || 0} reseñas)</small></p>
+      <button class="btn btn-sm btn-info text-white w-100" onclick="selectSpot('${spot.id}', '${spot.name}', ${spot.latitude}, ${spot.longitude})">
+        ✅ Seleccionar este lugar
       </button>
     </div>
   `;
@@ -231,17 +432,24 @@ function showSpotInfo(spot, marker) {
 // ============================================
 
 function selectSpot(spotId, spotName, lat, lon) {
-  selectedSpot = {
-    id: spotId,
-    name: spotName,
-    lat: lat,
-    lon: lon
-  };
+  // Limpiar marker personalizado si existe
+  if (customMarker) {
+    customMarker.setMap(null);
+    customMarker = null;
+  }
 
-  // Guardar coordenadas como string "lat,lon"
+  selectedSpot = { 
+    id: spotId, 
+    name: spotName, 
+    lat: lat, 
+    lon: lon,
+    isCustom: false
+  };
+  
   selectedCoordinates = `${lat},${lon}`;
 
-  console.log('📍 Coordenadas seleccionadas:', selectedCoordinates);
+  console.log('📍 Spot seleccionado:', selectedSpot);
+  console.log('📍 Coordenadas:', selectedCoordinates);
 
   updateSelectionInfo();
   checkReadyToConsult();
@@ -259,19 +467,20 @@ function updateSelectionInfo() {
     infoPanel.style.display = 'block';
     
     document.getElementById('info-activity').textContent = 
-      selectedActivity ? selectedActivity.toUpperCase() : '-';
+      selectedActivity ? CONFIG.ACTIVITIES[selectedActivity].name : '-';
     
-    document.getElementById('info-date').textContent = 
-      selectedDate || '-';
+    document.getElementById('info-date').textContent = selectedDate || '-';
     
-    document.getElementById('info-spot').textContent = 
-      selectedSpot ? selectedSpot.name : '-';
+    // ⭐ MEJORADO: Mostrar si es ubicación personalizada
+    const spotName = selectedSpot ? selectedSpot.name : '-';
+    const customLabel = selectedSpot?.isCustom ? ' (Personalizada)' : '';
+    document.getElementById('info-spot').textContent = spotName + customLabel;
     
     document.getElementById('info-lat').textContent = 
-      selectedSpot ? selectedSpot.lat.toFixed(4) : '-';
+      selectedSpot ? selectedSpot.lat.toFixed(6) : '-';
     
     document.getElementById('info-lon').textContent = 
-      selectedSpot ? selectedSpot.lon.toFixed(4) : '-';
+      selectedSpot ? selectedSpot.lon.toFixed(6) : '-';
   } else {
     infoPanel.style.display = 'none';
   }
@@ -293,36 +502,29 @@ function setupEventListeners() {
         // Cargar spots de la nueva actividad
         const center = map.getCenter();
         loadNearbySpots(center.lat(), center.lng());
+
+        // ⭐ NUEVO: Mostrar hint
+        console.log(`💡 Ahora puedes:
+1. Hacer click en un marcador ${CONFIG.ACTIVITIES[selectedActivity].icon} existente
+2. O hacer click en cualquier punto del mapa para crear tu propia ubicación`);
       }
     });
   });
 
-  // Calendario - INLINE (desplegable)
+  // Calendario inline
   flatpickrInstance = flatpickr("#calendar-inline", {
     defaultDate: new Date(),
     minDate: "today",
-    maxDate: new Date().fp_incr(365), // 1 año adelante
-    inline: true, // Mostrar calendario desplegado
+    maxDate: new Date().fp_incr(365),
+    inline: true,
     dateFormat: "Y-m-d",
     onChange: function(selectedDates, dateStr) {
       selectedDate = dateStr;
-      
-      // Actualizar el input también
       document.getElementById('fecha').value = dateStr;
-      
       updateSelectionInfo();
       checkReadyToConsult();
-      
       console.log('📅 Fecha seleccionada:', selectedDate);
     }
-  });
-
-  // Input de fecha (por si el usuario escribe manualmente)
-  document.getElementById('fecha').addEventListener('change', function() {
-    selectedDate = this.value;
-    flatpickrInstance.setDate(this.value);
-    updateSelectionInfo();
-    checkReadyToConsult();
   });
 
   // Botón consultar
@@ -333,7 +535,7 @@ function setupEventListeners() {
 }
 
 // ============================================
-// VERIFICAR SI ESTÁ LISTO PARA CONSULTAR
+// VERIFICAR SI ESTÁ LISTO
 // ============================================
 
 function checkReadyToConsult() {
@@ -341,17 +543,13 @@ function checkReadyToConsult() {
   
   if (selectedActivity && selectedDate && selectedSpot) {
     btnConsultar.disabled = false;
-    btnConsultar.classList.remove('btn-secondary');
-    btnConsultar.classList.add('btn-primary');
   } else {
     btnConsultar.disabled = true;
-    btnConsultar.classList.remove('btn-primary');
-    btnConsultar.classList.add('btn-secondary');
   }
 }
 
 // ============================================
-// CONSULTAR CLIMA (ENVIAR AL BACKEND)
+// CONSULTAR CLIMA
 // ============================================
 
 async function consultWeather() {
@@ -360,34 +558,29 @@ async function consultWeather() {
     return;
   }
 
-  // Convertir fecha a formato YYYYMMDD para el backend
   const dateFormatted = selectedDate.replace(/-/g, '');
 
-  // Preparar datos para el backend
   const weatherQuery = {
-    day: dateFormatted,                    // "20251005"
-    lat: selectedSpot.lat,                 // 19.4326
-    lon: selectedSpot.lon,                 // -99.1332
-    coordinates: selectedCoordinates,      // "19.4326,-99.1332" (string)
-    activity: selectedActivity,            // "running"
-    spotName: selectedSpot.name,          // "Bosque de Chapultepec"
-    spotId: selectedSpot.id               // UUID del spot
+    day: dateFormatted,
+    lat: selectedSpot.lat,
+    lon: selectedSpot.lon,
+    coordinates: selectedCoordinates,
+    activity: selectedActivity,
+    spotName: selectedSpot.name,
+    spotId: selectedSpot.id,
+    isCustomLocation: selectedSpot.isCustom || false // ⭐ NUEVO: Flag de ubicación personalizada
   };
 
-  console.log('🌦️ Datos para consultar clima:', weatherQuery);
-  console.log('📍 Coordenadas (string):', selectedCoordinates);
+  console.log('🌦️ Consultando clima:', weatherQuery);
 
-  // Guardar en localStorage para pasar a resultados.html
-  localStorage.setItem('weatherQuery', JSON.stringify(weatherQuery));
+  localStorage.setItem(CONFIG.STORAGE_KEYS.WEATHER_QUERY, JSON.stringify(weatherQuery));
 
-  // Mostrar loading
   const btnConsultar = document.getElementById('btn-consultar');
   const originalText = btnConsultar.innerHTML;
-  btnConsultar.innerHTML = '⏳ Consultando...';
+  btnConsultar.innerHTML = '⏳ Consultando NASA...';
   btnConsultar.disabled = true;
 
   try {
-    // Llamar a tu API backend
     const response = await fetch(
       `${API_BASE_URL}/weather/forecast?day=${dateFormatted}&lat=${selectedSpot.lat}&lon=${selectedSpot.lon}&activity=${selectedActivity}&place_name=${encodeURIComponent(selectedSpot.name)}`
     );
@@ -397,27 +590,22 @@ async function consultWeather() {
     }
 
     const weatherData = await response.json();
+    localStorage.setItem(CONFIG.STORAGE_KEYS.WEATHER_DATA, JSON.stringify(weatherData));
 
-    // Guardar respuesta completa
-    localStorage.setItem('weatherData', JSON.stringify(weatherData));
+    console.log('✅ Datos recibidos:', weatherData);
 
-    console.log('✅ Datos de clima recibidos:', weatherData);
-
-    // Redirigir a resultados
     window.location.href = 'resultados.html';
 
   } catch (error) {
-    console.error('❌ Error consultando clima:', error);
-    alert('Error al consultar el clima. Verifica que el backend esté corriendo.');
-    
-    // Restaurar botón
+    console.error('❌ Error:', error);
+    alert('Error al consultar el clima. Verifica que el backend esté corriendo en http://localhost:8000');
     btnConsultar.innerHTML = originalText;
     btnConsultar.disabled = false;
   }
 }
 
 // ============================================
-// RESET SELECCIÓN
+// RESET
 // ============================================
 
 function resetSelection() {
@@ -426,19 +614,19 @@ function resetSelection() {
   selectedDate = null;
   selectedCoordinates = null;
 
-  // Limpiar checkboxes
-  document.querySelectorAll('.activity-checkbox').forEach(cb => cb.checked = false);
+  // Limpiar marker personalizado
+  if (customMarker) {
+    customMarker.setMap(null);
+    customMarker = null;
+  }
 
-  // Limpiar fecha
+  document.querySelectorAll('.activity-checkbox').forEach(cb => cb.checked = false);
   document.getElementById('fecha').value = '';
   flatpickrInstance.clear();
-
-  // Limpiar markers
   clearMarkers();
-
-  // Actualizar UI
   updateSelectionInfo();
   checkReadyToConsult();
+  infoWindow.close();
 
   console.log('🔄 Selección limpiada');
 }
@@ -452,31 +640,72 @@ function clearMarkers() {
   markers = [];
 }
 
-function getActivityId(activitySlug) {
-  const activityMap = {
-    'running': 1,
-    'cycling': 2,
-    'hiking': 3,
-    'fishing': 4,
-    'camping': 5
-  };
-  return activityMap[activitySlug] || 1;
+function closeInfoWindow() {
+  infoWindow.close();
 }
 
-function getActivityIcon(activitySlug) {
-  const iconMap = {
-    'running': '🏃',
-    'cycling': '🚴',
-    'hiking': '🥾',
-    'fishing': '🎣',
-    'camping': '⛺'
-  };
-  return iconMap[activitySlug] || '📍';
+function logout() {
+  if (confirm('¿Estás seguro de cerrar sesión?')) {
+    localStorage.removeItem(CONFIG.STORAGE_KEYS.USER);
+    localStorage.removeItem(CONFIG.STORAGE_KEYS.SESSION_TOKEN);
+    window.location.reload();
+  }
 }
 
-// ============================================
-// EXPONER FUNCIONES GLOBALES
-// ============================================
+function checkUserSession() {
+  const navAuth = document.getElementById('nav-auth');
+  if (!navAuth) return;
 
+  const userString = localStorage.getItem(CONFIG.STORAGE_KEYS.USER);
+  
+  if (!userString) return;
+
+  try {
+    const user = JSON.parse(userString);
+    const username = user.username || 'Usuario';
+    const email = user.email || '';
+
+    navAuth.innerHTML = `
+      <div class="dropdown">
+        <button class="btn btn-outline-primary dropdown-toggle d-flex align-items-center" 
+                type="button" 
+                data-bs-toggle="dropdown" 
+                aria-expanded="false">
+          <img src="${user.avatar_url || 'https://via.placeholder.com/32'}" 
+               alt="avatar" 
+               width="28" 
+               height="28" 
+               class="rounded-circle me-2" 
+               style="object-fit:cover;">
+          <span>${username}</span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><h6 class="dropdown-header">${username}</h6></li>
+          <li><p class="dropdown-item-text mb-0 small text-muted px-3">${email}</p></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item" href="perfil.html">👤 Mi perfil</a></li>
+          <li><a class="dropdown-item" href="select.html">🗺️ Nueva actividad</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><button class="dropdown-item text-danger" id="logoutBtn" type="button">🚪 Cerrar sesión</button></li>
+        </ul>
+      </div>
+    `;
+
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', logout);
+    }
+    
+  } catch (error) {
+    console.error('Error parseando usuario:', error);
+    localStorage.removeItem(CONFIG.STORAGE_KEYS.USER);
+  }
+}
+
+
+// Exponer funciones globales
 window.initMap = initMap;
 window.selectSpot = selectSpot;
+window.selectCustomLocation = selectCustomLocation;
+window.cancelCustomLocation = cancelCustomLocation;
+window.closeInfoWindow = closeInfoWindow;
