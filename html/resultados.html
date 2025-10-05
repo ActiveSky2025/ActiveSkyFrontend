@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Resultados - ActiveSky</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .map-placeholder {
+      background-color: #e9ecef;
+      height: 300px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px dashed #adb5bd;
+      margin-bottom: 2rem;
+    }
+    .profile-box {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .profile-img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background-color: #ced4da;
+    }
+    .weather-box {
+      background-color: #f8f9fa;
+      border: 1px solid #dee2e6;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .temp-priority {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #dc3545;
+    }
+    .secondary-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .secondary-box {
+      background-color: #ffffff;
+      border: 1px solid #dee2e6;
+      border-radius: 0.5rem;
+      padding: 0.75rem;
+      text-align: center;
+      font-size: 0.9rem;
+      color: #6c757d;
+    }
+    .activity-box {
+      background-color: #e2f0d9;
+      border-left: 5px solid #198754;
+      padding: 1rem;
+      border-radius: 0.5rem;
+    }
+    .logo-img {
+      height: 40px;
+      margin-right: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-light bg-light px-4 d-flex justify-content-between align-items-center">
+      <span class="navbar-brand mb-0 h1">ActiveSky</span>
+    </a>
+    <div class="profile-box">
+      <div class="profile-img"></div>
+      <span>Usuario Ejemplo</span>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="container my-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h4 class="mb-0">Parque Nacional de Yosemite, CA - Viernes 5 de julio de 2024</h4>
+      <button class="btn btn-outline-secondary btn-sm">Editar información</button>
+    </div>
+
+    <div class="row">
+      <!-- Left Column -->
+      <div class="col-md-8">
+        <!-- Unified Weather Section -->
+        <div class="weather-box mb-4">
+          <div class="text-center">
+            <div class="temp-priority">Máx: 25°C / Mín: 18°C</div>
+            <p class="mb-1">Mayormente Soleado ☀️</p>
+          </div>
+
+          <!-- Secondary Weather Data in Grid -->
+          <div class="secondary-grid">
+            <div class="secondary-box"><strong>Humedad</strong><br>30%</div>
+            <div class="secondary-box"><strong>Viento</strong><br>10 km/h</div>
+            <div class="secondary-box"><strong>Índice UV</strong><br>6 (Moderado)</div>
+            <div class="secondary-box"><strong>Precipitación</strong><br>0%</div>
+          </div>
+        </div>
+
+        <!-- Activity Recommendation -->
+        <div class="activity-box mb-4">
+          <h5>¡Día perfecto para una caminata! 🥾</h5>
+          <p>El clima es ideal para caminar al aire libre. Cielos despejados y una temperatura agradable.</p>
+          <button class="btn btn-success">Guardar Datos</button>
+        </div>
+      </div>
+
+      <!-- Right Column -->
+      <div class="col-md-4">
+        <!-- Evaluate Another Activity -->
+        <div class="mb-4">
+          <label for="actividad" class="form-label">Evaluar otra actividad:</label>
+          <select id="actividad" class="form-select mb-2">
+            <option selected>Ciclismo</option>
+            <option>Camping</option>
+            <option>Running</option>
+            <option>Escalada</option>
+          </select>
+          <button class="btn btn-primary w-100">Evaluar</button>
+        </div>
+
+        <!-- Map Placeholder -->
+        <div class="map-placeholder">
+          <span>Espacio reservado para el mapa</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+</body>
+</html>
