@@ -15,6 +15,7 @@
       .community-title { font-weight: bold; font-size: 2rem; margin-top: 32px; }
     </style>
   </head>
+  <script src="/js/index.js" defer></script>
   <body>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg shadow-sm">
@@ -23,7 +24,7 @@
           <img src="../assets/images/logo.jpg" alt="Logo" width="32" height="32" class="me-2">
           <span class="fw-bold">ActiveSky</span>
         </a>
-        <div>
+        <div id="nav-auth">
           <a href="login.html#register-modal" class="btn btn-outline-primary me-2" id="btn-registrarse">Registrarse</a>
           <a href="login.html" class="btn btn-outline-primary">Iniciar sesión</a>
         </div>
@@ -38,7 +39,9 @@
         Ya sea que busques una aventura en solitario, un día divertido con la familia o un nuevo desafío deportivo,
         te conectamos con el momento y lugar perfecto para disfrutar. ¡Explora, comparte y vive al máximo!
       </p>
-      <a href="#" class="btn btn-info btn-lg text-white fw-bold">Explorar</a>
+      <a href="select.html" class="btn btn-info btn-lg text-white fw-bold" id="btn-explorar" aria-label="Explorar actividades">
+  Explorar
+</a>
     </div>
 
     <!-- Comunidad Section -->
@@ -46,6 +49,7 @@
       <div class="community-title text-center mb-4">Comentarios de la Comunidad</div>
       <div class="row g-4">
         <div class="col-md-3">
+          <a href="section_comentarios.html" class="text-decoration-none text-dark">
           <div class="card h-100 shadow-sm">
             <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80" class="card-img-top" alt="Senderismo">
             <div class="card-body">
@@ -53,8 +57,10 @@
               <p class="card-text">¡Una experiencia increíble! El clima era perfecto y la vista desde la cima valió la pena cada paso.</p>
             </div>
           </div>
+          </a>
         </div>
         <div class="col-md-3">
+          <a href="section_comentarios.html" class="text-decoration-none text-dark">
           <div class="card h-100 shadow-sm">
             <img src="https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80" class="card-img-top" alt="Bicicleta">
             <div class="card-body">
@@ -62,8 +68,10 @@
               <p class="card-text">ActiveSky nos avisó del día soleado y aprovechamos para hacer esta ruta. ¡Súper recomendable!</p>
             </div>
           </div>
+          </a>
         </div>
         <div class="col-md-3">
+          <a href="section_comentarios.html" class="text-decoration-none text-dark">
           <div class="card h-100 shadow-sm">
             <img src="https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80" class="card-img-top" alt="Yoga">
             <div class="card-body">
@@ -71,8 +79,10 @@
               <p class="card-text">Perfecto para empezar el día. El parque estaba tranquilo y el pronóstico acertó completamente.</p>
             </div>
           </div>
+          </a>
         </div>
         <div class="col-md-3">
+          <a href="section_comentarios.html" class="text-decoration-none text-dark">
           <div class="card h-100 shadow-sm">
             <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=400&q=80" class="card-img-top" alt="Picnic">
             <div class="card-body">
@@ -80,6 +90,7 @@
               <p class="card-text">Un día inolvidable con los niños. Gracias a la app evitamos la lluvia que venía más tarde.</p>
             </div>
           </div>
+          </a>
         </div>
       </div>
     </div>

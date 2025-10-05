@@ -5,30 +5,69 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>ActiveSky</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet">
   <style>
+    html, body {
+      height: 100%;
+      overflow: hidden; /* Evita el scroll */
+    }
+
     .map-placeholder {
       background-color: #e9ecef;
-      height: 400px;
+      height: 70vh;
       display: flex;
       align-items: center;
       justify-content: center;
       border: 2px dashed #adb5bd;
-      margin-bottom: 2rem;
+      position: relative;
+      margin-bottom: 1rem;
     }
+
     .profile-box {
       display: flex;
       align-items: center;
       gap: 1rem;
       margin-top: 1rem;
     }
+
     .profile-img {
       width: 50px;
       height: 50px;
       border-radius: 50%;
       background-color: #ced4da;
     }
+
+    .activity-block {
+      border: 1px solid #dee2e6;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      background-color: #f8f9fa;
+      margin-bottom: 1.5rem;
+    }
+
     .calendar-section {
-      margin-top: 3rem;
+      margin-bottom: 2rem;
+    }
+
+    .calendar-section h6 {
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+
+    .flatpickr-calendar {
+      margin-top: 0.5rem;
+    }
+
+    .consultar-btn {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 2rem;
+    }
+
+    .container {
+      height: calc(100% - 80px); /* Ajusta según la altura del navbar */
+      overflow-y: auto; /* Permite scroll interno si es necesario */
+      padding-bottom: 1rem;
     }
   </style>
 </head>
@@ -48,32 +87,34 @@
     <div class="row">
       <!-- Sidebar -->
       <div class="col-md-4">
-        <h6>Selecciona actividades:</h6>
-        <div class="form-check">
-          <input class="form-check-input" type="checkbox" id="ninguna">
-          <label class="form-check-label" for="ninguna">Ninguna</label>
-        </div>
-        <div class="form-check">
-          <input class="form-check-input" type="checkbox" id="running">
-          <label class="form-check-label" for="running">Running</label>
-        </div>
-        <div class="form-check">
-          <input class="form-check-input" type="checkbox" id="camping">
-          <label class="form-check-label" for="camping">Camping</label>
-        </div>
-        <div class="form-check">
-          <input class="form-check-input" type="checkbox" id="hiking">
-          <label class="form-check-label" for="hiking">Hiking</label>
-        </div>
-        <div class="form-check">
-          <input class="form-check-input" type="checkbox" id="cycling">
-          <label class="form-check-label" for="cycling">Cycling</label>
+        <div class="activity-block">
+          <h6>Selecciona actividades:</h6>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="ninguna">
+            <label class="form-check-label" for="ninguna">Ninguna</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="running">
+            <label class="form-check-label" for="running">Running</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="camping">
+            <label class="form-check-label" for="camping">Camping</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="hiking">
+            <label class="form-check-label" for="hiking">Hiking</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="cycling">
+            <label class="form-check-label" for="cycling">Cycling</label>
+          </div>
         </div>
 
         <!-- Calendar Section -->
         <div class="calendar-section">
           <h6>Fecha seleccionada:</h6>
-          <input type="date" id="fecha" class="form-control" min="2001-01-01" max="2026-12-31" value="2024-07-01">
+          <input type="text" id="fecha" class="form-control" placeholder="Selecciona o escribe la fecha">
         </div>
       </div>
 
@@ -82,14 +123,32 @@
         <div class="map-placeholder">
           <span>Espacio reservado para el mapa</span>
         </div>
+
+        <!-- Consult Button -->
+        <div class="consultar-btn">
+          <button class="btn btn-primary" id="btn-consultar">Consultar</button>
+        </div>
       </div>
     </div>
-
-    <!-- Consult Button -->
-    <div class="text-center">
-      <button class="btn btn-primary">Consultar</button>
-    </div>
   </div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script>
+    flatpickr("#fecha", {
+      defaultDate: "2025-02-02",
+      minDate: "1980-01-01",
+      maxDate: "2026-12-31",
+      allowInput: true,
+      inline: true,
+      locale: "es"
+    });
+  </script>
 </body>
+<script>
+  document.getElementById('btn-consultar').addEventListener('click', () => {
+    window.location.href = 'resultados.html';
+  });
+</script>
 </html>
