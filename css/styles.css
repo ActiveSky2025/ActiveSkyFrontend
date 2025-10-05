@@ -720,3 +720,44 @@ body {
   padding: 8px 16px;
   font-weight: 600;
 }
+
+
+.star-btn {
+  border: none;
+  background: transparent;
+  padding: 0.25rem;
+  transition: all 0.2s ease;
+}
+
+.star-btn:hover {
+  transform: scale(1.1);
+}
+
+.star-btn.btn-warning {
+  background: transparent !important;
+}
+
+.star-icon {
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+}
+
+.btn-outline-warning .star-icon {
+  color: #e0e0e0;
+}
+
+.btn-warning .star-icon {
+  color: #ffc107;
+}
+
+#review-comment {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.modal-header {
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.modal-footer {
+  border-top: 2px solid #f0f0f0;
+}

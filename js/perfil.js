@@ -76,7 +76,7 @@ async function loadUserActivities() {
     const data = await response.json();
     const visits = data.visits || [];
 
-    console.log(`✅ Visitas cargadas: ${visits.length}`);
+    console.log(`✅ Visitas cargadas: ${visits.length} `);
 
     const container = document.getElementById('user-activities');
 

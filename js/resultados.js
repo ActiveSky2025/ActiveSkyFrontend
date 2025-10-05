@@ -312,7 +312,6 @@ async function downloadData(format) {
 // ============================================
 // GUARDAR VISITA
 // ============================================
-
 async function saveVisit() {
   const userString = localStorage.getItem(CONFIG.STORAGE_KEYS.USER);
   
@@ -325,16 +324,29 @@ async function saveVisit() {
   try {
     const user = JSON.parse(userString);
     
+    // Validar que el usuario tenga ID
+    if (!user || !user.id) {
+      alert('⚠️ Usuario inválido. Por favor inicia sesión nuevamente.');
+      return;
+    }
+    
+    // Formatear fecha YYYYMMDD -> YYYY-MM-DD
+    const formattedDate = weatherQuery.day.substring(0, 4) + '-' + 
+                         weatherQuery.day.substring(4, 6) + '-' + 
+                         weatherQuery.day.substring(6, 8);
+    
+    // Estructurar según el schema VisitCreate
     const visitData = {
-      visit_date: weatherQuery.day.substring(0, 4) + '-' + 
-                  weatherQuery.day.substring(4, 6) + '-' + 
-                  weatherQuery.day.substring(6, 8),
+      visit_date: formattedDate,
       notes: `Visita planificada - ${CONFIG.ACTIVITIES[weatherQuery.activity].name}`,
-      weather_data: weatherData.analytics
+      user_id: user.id,
+      weather_data: {}  // ← Ahora va en el body (puedes agregar datos si quieres)
     };
 
+    console.log('📤 Enviando visita:', visitData);  // Debug
+
     const response = await fetch(
-      `${API_BASE_URL}/spots/${weatherQuery.spotId}/visit?user_id=${user.id || 'temp'}`,
+      `${API_BASE_URL}/spots/${weatherQuery.spotId}/visit`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -342,19 +354,26 @@ async function saveVisit() {
       }
     );
 
-    if (!response.ok) throw new Error('Error al guardar');
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('❌ Error del servidor:', errorData);
+      throw new Error(errorData.detail || 'Error al guardar');
+    }
 
+    const result = await response.json();
+    console.log('✅ Visita guardada:', result);
     alert('✅ Visita guardada exitosamente');
     
   } catch (error) {
-    console.error('Error:', error);
-    alert('Error al guardar visita');
+    console.error('Error guardando visita:', error);
+    alert(`❌ Error al guardar visita: ${error.message}`);
   }
 }
-
 // ============================================
 // AGREGAR RESEÑA
 // ============================================
+let selectedRating = 0;
+let reviewModal = null;
 
 function addReview() {
   const userString = localStorage.getItem(CONFIG.STORAGE_KEYS.USER);
@@ -365,43 +384,159 @@ function addReview() {
     return;
   }
 
-  const rating = prompt('Califica este lugar (1-5 estrellas):');
-  if (!rating || rating < 1 || rating > 5) return;
+  // Inicializar modal si no existe
+  if (!reviewModal) {
+    reviewModal = new bootstrap.Modal(document.getElementById('reviewModal'));
+    setupReviewModal();
+  }
 
-  const comment = prompt('Escribe tu comentario:');
-  if (!comment) return;
+  // Resetear formulario
+  selectedRating = 0;
+  document.getElementById('rating-value').value = '';
+  document.getElementById('review-comment').value = '';
+  document.getElementById('rating-text').textContent = 'Selecciona una calificación';
+  document.getElementById('submit-review-btn').disabled = true;
+  
+  // Resetear estrellas
+  document.querySelectorAll('.star-btn').forEach(btn => {
+    btn.classList.remove('btn-warning');
+    btn.classList.add('btn-outline-warning');
+  });
 
-  submitReview(parseInt(rating), comment);
+  // Mostrar modal
+  reviewModal.show();
+}
+
+function setupReviewModal() {
+  const starButtons = document.querySelectorAll('.star-btn');
+  const ratingInput = document.getElementById('rating-value');
+  const ratingText = document.getElementById('rating-text');
+  const commentTextarea = document.getElementById('review-comment');
+  const submitBtn = document.getElementById('submit-review-btn');
+
+  // Event listeners para las estrellas
+  starButtons.forEach(btn => {
+    btn.addEventListener('click', function() {
+      const rating = parseInt(this.dataset.rating);
+      selectedRating = rating;
+      ratingInput.value = rating;
+
+      // Actualizar visualización de estrellas
+      starButtons.forEach((star, index) => {
+        if (index < rating) {
+          star.classList.remove('btn-outline-warning');
+          star.classList.add('btn-warning');
+        } else {
+          star.classList.remove('btn-warning');
+          star.classList.add('btn-outline-warning');
+        }
+      });
+
+      // Actualizar texto
+      const ratingLabels = {
+        1: '⭐ Malo',
+        2: '⭐⭐ Regular',
+        3: '⭐⭐⭐ Bueno',
+        4: '⭐⭐⭐⭐ Muy bueno',
+        5: '⭐⭐⭐⭐⭐ Excelente'
+      };
+      ratingText.textContent = ratingLabels[rating];
+      ratingText.className = 'text-warning fw-bold';
+
+      // Validar formulario
+      validateReviewForm();
+    });
+  });
+
+  // Event listener para el textarea
+  commentTextarea.addEventListener('input', validateReviewForm);
+
+  // Event listener para enviar
+  submitBtn.addEventListener('click', handleSubmitReview);
+}
+
+function validateReviewForm() {
+  const rating = parseInt(document.getElementById('rating-value').value);
+  const comment = document.getElementById('review-comment').value.trim();
+  const submitBtn = document.getElementById('submit-review-btn');
+
+  // Validar: rating entre 1-5 y comentario mínimo 10 caracteres
+  if (rating >= 1 && rating <= 5 && comment.length >= 10) {
+    submitBtn.disabled = false;
+  } else {
+    submitBtn.disabled = true;
+  }
+}
+
+async function handleSubmitReview() {
+  const rating = parseInt(document.getElementById('rating-value').value);
+  const comment = document.getElementById('review-comment').value.trim();
+  
+  if (!rating || rating < 1 || rating > 5) {
+    alert('⚠️ Por favor selecciona una calificación válida');
+    return;
+  }
+
+  if (comment.length < 10) {
+    alert('⚠️ El comentario debe tener al menos 10 caracteres');
+    return;
+  }
+
+  await submitReview(rating, comment);
 }
 
 async function submitReview(rating, comment) {
+  const submitBtn = document.getElementById('submit-review-btn');
+  const spinner = document.getElementById('review-spinner');
+  
   try {
     const user = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEYS.USER));
+    
+    if (!user || !user.id) {
+      alert('⚠️ Debes iniciar sesión para dejar una reseña');
+      reviewModal.hide();
+      window.location.href = 'login.html';
+      return;
+    }
+
+    // Mostrar spinner
+    submitBtn.disabled = true;
+    spinner.classList.remove('d-none');
 
     const response = await fetch(
-      `${API_BASE_URL}/spots/${weatherQuery.spotId}/reviews?user_id=${user.id || 'temp'}`,
+      `${API_BASE_URL}/spots/${weatherQuery.spotId}/reviews`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
           rating, 
           comment,
-          spot_id: weatherQuery.spotId 
+          user_id: user.id
         })
       }
     );
 
-    if (!response.ok) throw new Error('Error al enviar reseña');
-    console.log('Reseña enviada:', JSON.stringify({ rating, comment }))
-    alert('✅ Reseña enviada exitosamente');
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.detail || 'Error al enviar reseña');
+    }
+    
+    const result = await response.json();
+    console.log('✅ Reseña enviada:', result);
+    
+    // Cerrar modal
+    reviewModal.hide();
+    
+    // Mostrar mensaje de éxito
+    alert('✅ Reseña enviada exitosamente. ¡Gracias por tu opinión!');
     
   } catch (error) {
     console.error('Error:', error);
-    console.log('Reseña enviada:', JSON.stringify({ rating, comment, spot_id: weatherQuery.spotId  }))
-
-
-
-    alert('Error al enviar reseña');
+    alert(`❌ Error: ${error.message}`);
+  } finally {
+    // Ocultar spinner
+    spinner.classList.add('d-none');
+    submitBtn.disabled = false;
   }
 }
 

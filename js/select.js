@@ -410,23 +410,136 @@ function createSpotMarker(spot) {
 // INFO WINDOW DE SPOT
 // ============================================
 
-function showSpotInfo(spot, marker) {
+
+let spotReviews = []; // ⭐ Variable global para guardar reseñas
+let showAllReviews = false; // ⭐ Estado para mostrar/ocultar reseñas
+
+const getSpotReviews = async (spotId) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/spots/${spotId}/reviews`);
+    
+    if (!response.ok) {
+      throw new Error('Error al cargar reseñas');
+    }
+    
+    const data = await response.json();
+    spotReviews = data.reviews || []; // ⭐ Guardar reseñas en el arreglo
+    
+    console.log('📄 Reseñas del spot:', spotReviews);
+    console.log(`📊 Total de reseñas: ${spotReviews.length}`);
+    
+    return spotReviews;
+    
+  } catch (error) {
+    console.error('Error al cargar reseñas:', error);
+    spotReviews = [];
+    return [];
+  }
+}
+
+// ⭐ NUEVA FUNCIÓN: Generar estrellas visuales
+function generateStars(rating) {
+  const fullStars = Math.floor(rating);
+  const emptyStars = 5 - fullStars;
+  
+  let stars = '';
+  for (let i = 0; i < fullStars; i++) {
+    stars += '⭐';
+  }
+  for (let i = 0; i < emptyStars; i++) {
+    stars += '☆';
+  }
+  
+  return stars;
+}
+
+// ⭐ NUEVA FUNCIÓN: Generar HTML de reseñas
+function generateReviewsHTML(reviews) {
+  if (reviews.length === 0) {
+    return '<p class="mb-2"><small class="text-muted">Sin reseñas aún</small></p>';
+  }
+
+  const reviewsToShow = showAllReviews ? reviews : reviews.slice(0, 2);
+  
+  let html = `
+    <div class="reviews-section mb-2">
+      <p class="mb-2"><strong>📝 Reseñas (${reviews.length}):</strong></p>
+      <div style="max-height: 200px; overflow-y: auto; padding-right: 5px;">
+  `;
+
+  reviewsToShow.forEach(review => {
+    html += `
+      <div class="review-item mb-2" style="background: #f8f9fa; padding: 8px; border-radius: 6px; border-left: 3px solid #4CAF50;">
+        <div class="mb-1">
+          <span style="font-size: 14px;">${generateStars(review.rating)}</span>
+          <span class="badge bg-success ms-1">${review.rating}/5</span>
+        </div>
+        <p class="mb-0 small">${review.comment || 'Sin comentario'}</p>
+        <small class="text-muted">${new Date(review.created_at).toLocaleDateString('es-ES')}</small>
+      </div>
+    `;
+  });
+
+  html += '</div>';
+
+  // Botón para ver más/menos solo si hay más de 2 reseñas
+  if (reviews.length > 2) {
+    html += `
+      <button class="btn btn-sm btn-link p-0 text-decoration-none" onclick="toggleReviews()">
+        ${showAllReviews ? '👆 Ver menos' : '👇 Ver todas las reseñas'}
+      </button>
+    `;
+  }
+
+  html += '</div>';
+
+  return html;
+}
+
+// ⭐ NUEVA FUNCIÓN: Toggle para mostrar/ocultar todas las reseñas
+async function toggleReviews() {
+  showAllReviews = !showAllReviews;
+  
+  // Re-renderizar el InfoWindow con el estado actualizado
+  const currentSpot = markers.find(m => m.getAnimation() !== null)?.spot;
+  if (currentSpot) {
+    await updateInfoWindowContent(currentSpot);
+  }
+}
+
+// ⭐ MEJORADA: Función para actualizar el contenido del InfoWindow
+async function updateInfoWindowContent(spot) {
+  const reviews = await getSpotReviews(spot.id);
+  const reviewsHTML = generateReviewsHTML(reviews);
+
   const content = `
-    <div class="spot-info">
-      <h6>${spot.name}</h6>
-      <p>${spot.description || 'Sin descripción'}</p>
-      <p class="mb-1"><small>📍 ${spot.city || ''}, ${spot.country || ''}</small></p>
-      <p class="mb-2"><small>⭐ ${spot.rating_avg || 'N/A'} (${spot.total_reviews || 0} reseñas)</small></p>
-      <button class="btn btn-sm btn-info text-white w-100" onclick="selectSpot('${spot.id}', '${spot.name}', ${spot.latitude}, ${spot.longitude})">
+    <div class="spot-info" style="max-width: 300px;">
+      <h6 class="mb-2">${spot.name}</h6>
+      <p class="mb-2 small">${spot.description || 'Sin descripción'}</p>
+      <p class="mb-2"><small>📍 ${spot.city || ''}, ${spot.country || ''}</small></p>
+      
+      ${reviewsHTML}
+      
+      <button class="btn btn-sm btn-info text-white w-100 mt-2" onclick="selectSpot('${spot.id}', '${spot.name}', ${spot.latitude}, ${spot.longitude})"> 
         ✅ Seleccionar este lugar
       </button>
     </div>
   `;
 
   infoWindow.setContent(content);
-  infoWindow.open(map, marker);
 }
 
+async function showSpotInfo(spot, marker) {
+  // Resetear estado de reseñas
+  showAllReviews = false;
+  
+  // Guardar referencia del spot en el marker
+  marker.spot = spot;
+  
+  // Mostrar el InfoWindow con las reseñas
+  await updateInfoWindowContent(spot);
+  infoWindow.open(map, marker);
+}
 // ============================================
 // SELECCIONAR SPOT
 // ============================================

@@ -109,12 +109,80 @@
           <div id="result-map" class="result-map mb-3"></div>
 
           <!-- Botones de acción -->
-          <button class="btn btn-success w-100 mb-2" id="btn-save-visit">💾 Guardar Visita</button>
-          <button class="btn btn-outline-primary w-100" id="btn-add-review">⭐ Dejar Reseña</button>
+          <button class="btn btn-success w-100 mb-2" id="btn-save-visit">Guardar Visita</button>
+          <button class="btn btn-outline-primary w-100" id="btn-add-review">Dejar Reseña</button>
         </div>
       </div>
     </div>
   </div>
+
+  <div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="reviewModalLabel">📝 Agregar Reseña</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form id="reviewForm">
+              <!-- Rating -->
+              <div class="mb-4">
+                <label class="form-label fw-bold">Calificación</label>
+                <div class="d-flex gap-2 justify-content-center mb-2">
+                  <button type="button" class="btn btn-outline-warning star-btn" data-rating="1">
+                    <svg class="star-icon" width="32" height="32" fill="currentColor" viewBox="0 0 256 256">
+                      <path d="M234.29,114.85l-45,38.83L203,211.75a16.4,16.4,0,0,1-24.5,17.82L128,198.49,77.47,229.57A16.4,16.4,0,0,1,53,211.75l13.76-58.07-45-38.83A16.46,16.46,0,0,1,31.08,86l59-4.76,22.76-55.08a16.36,16.36,0,0,1,30.27,0l22.75,55.08,59,4.76a16.46,16.46,0,0,1,9.37,28.86Z"></path>
+                    </svg>
+                  </button>
+                  <button type="button" class="btn btn-outline-warning star-btn" data-rating="2">
+                    <svg class="star-icon" width="32" height="32" fill="currentColor" viewBox="0 0 256 256">
+                      <path d="M234.29,114.85l-45,38.83L203,211.75a16.4,16.4,0,0,1-24.5,17.82L128,198.49,77.47,229.57A16.4,16.4,0,0,1,53,211.75l13.76-58.07-45-38.83A16.46,16.46,0,0,1,31.08,86l59-4.76,22.76-55.08a16.36,16.36,0,0,1,30.27,0l22.75,55.08,59,4.76a16.46,16.46,0,0,1,9.37,28.86Z"></path>
+                    </svg>
+                  </button>
+                  <button type="button" class="btn btn-outline-warning star-btn" data-rating="3">
+                    <svg class="star-icon" width="32" height="32" fill="currentColor" viewBox="0 0 256 256">
+                      <path d="M234.29,114.85l-45,38.83L203,211.75a16.4,16.4,0,0,1-24.5,17.82L128,198.49,77.47,229.57A16.4,16.4,0,0,1,53,211.75l13.76-58.07-45-38.83A16.46,16.46,0,0,1,31.08,86l59-4.76,22.76-55.08a16.36,16.36,0,0,1,30.27,0l22.75,55.08,59,4.76a16.46,16.46,0,0,1,9.37,28.86Z"></path>
+                    </svg>
+                  </button>
+                  <button type="button" class="btn btn-outline-warning star-btn" data-rating="4">
+                    <svg class="star-icon" width="32" height="32" fill="currentColor" viewBox="0 0 256 256">
+                      <path d="M234.29,114.85l-45,38.83L203,211.75a16.4,16.4,0,0,1-24.5,17.82L128,198.49,77.47,229.57A16.4,16.4,0,0,1,53,211.75l13.76-58.07-45-38.83A16.46,16.46,0,0,1,31.08,86l59-4.76,22.76-55.08a16.36,16.36,0,0,1,30.27,0l22.75,55.08,59,4.76a16.46,16.46,0,0,1,9.37,28.86Z"></path>
+                    </svg>
+                  </button>
+                  <button type="button" class="btn btn-outline-warning star-btn" data-rating="5">
+                    <svg class="star-icon" width="32" height="32" fill="currentColor" viewBox="0 0 256 256">
+                      <path d="M234.29,114.85l-45,38.83L203,211.75a16.4,16.4,0,0,1-24.5,17.82L128,198.49,77.47,229.57A16.4,16.4,0,0,1,53,211.75l13.76-58.07-45-38.83A16.46,16.46,0,0,1,31.08,86l59-4.76,22.76-55.08a16.36,16.36,0,0,1,30.27,0l22.75,55.08,59,4.76a16.46,16.46,0,0,1,9.37,28.86Z"></path>
+                    </svg>
+                  </button>
+                </div>
+                <input type="hidden" id="rating-value" name="rating" required>
+                <div class="text-center">
+                  <small id="rating-text" class="text-muted">Selecciona una calificación</small>
+                </div>
+              </div>
+
+              <!-- Comentario -->
+              <div class="mb-3">
+                <label for="review-comment" class="form-label fw-bold">Comentario</label>
+                <textarea class="form-control" id="review-comment" name="comment" rows="4" placeholder="Cuéntanos sobre tu experiencia en este lugar..." required></textarea>
+                <div class="form-text">Mínimo 10 caracteres</div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="button" class="btn btn-primary" id="submit-review-btn" disabled>
+              <span class="spinner-border spinner-border-sm d-none" id="review-spinner"></span>
+              Enviar Reseña
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ...existing scripts... -->
+  </body>
+</html>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
   <script src="../js/config.js"></script>

@@ -12,14 +12,14 @@ let selectedRating = 5;
 // ============================================
 
 document.addEventListener('DOMContentLoaded', () => {
-  const spotId = getSpotIdFromURL();
-  
-  if (!spotId) {
+  const id = getSpotIdFromURL();
+
+  if (!id) {
     showError('No se especificó un lugar válido');
     return;
   }
 
-  loadSpotDetails(spotId);
+  loadSpotDetails(id);
   setupEventListeners();
   setupStarRating();
 });
@@ -37,10 +37,10 @@ function getSpotIdFromURL() {
 // CARGAR DETALLES DEL SPOT
 // ============================================
 
-async function loadSpotDetails(spotId) {
+async function loadSpotDetails(id) {
   try {
-    const response = await fetch(`${API_BASE_URL}/spots/${spotId}`);
-    
+    const response = await fetch(`${API_BASE_URL}/spots/${id}`);
+
     if (!response.ok) {
       throw new Error('Spot no encontrado');
     }
@@ -49,8 +49,8 @@ async function loadSpotDetails(spotId) {
     console.log('📍 Spot cargado:', currentSpot);
 
     displaySpotDetails();
-    loadPhotos(spotId);
-    loadReviews(spotId);
+    loadPhotos(id);
+    loadReviews(id);
     loadNearbySpots();
     
   } catch (error) {
