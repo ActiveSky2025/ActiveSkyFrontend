@@ -7,6 +7,9 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="icon" type="image/png" sizes="32x32" href="../assets/images/logo.jpg">
   <style>
+
+    body {background: #f1eded;}
+
     .map-placeholder {
       background-color: #e9ecef;
       height: 300px;
@@ -66,25 +69,34 @@
       height: 40px;
       margin-right: 10px;
     }
+
+    .navbar { background: #fff; border-radius: 12px; margin: 16px; }
+
   </style>
 </head>
 <body>
 
   <!-- Navbar -->
-  <nav class="navbar navbar-light bg-light px-4 d-flex justify-content-between align-items-center">
-      <span class="navbar-brand mb-0 h1"> <img src="../assets/images/logo.jpg" alt="Logo" width="32" height="32" class="me-2">ActiveSky</span>
-    </a>
-    <div class="profile-box">
-      <div class="profile-img"></div>
-      <span>Usuario Ejemplo</span>
-    </div>
-  </nav>
+    <nav class="navbar navbar-expand-lg shadow-sm">
+      <div class="container-fluid">
+        <a class="navbar-brand d-flex align-items-center" href="../html/index.html">
+          <img src="../assets/images/logo.jpg" alt="Logo" width="32" height="32" class="me-2">
+          <span class="fw-bold">ActiveSky</span>
+        </a>
+        <div id="nav-auth">
+          <a href="login.html#register-modal" class="btn btn-outline-primary me-2" id="btn-registrarse">Registrarse</a>
+          <a href="login.html" class="btn btn-outline-primary">Iniciar sesión</a>
+        </div>
+      </div>
+    </nav>
 
   <!-- Main Content -->
   <div class="container my-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
       <h4 class="mb-0">Parque Nacional de Yosemite, CA - Viernes 5 de julio de 2024</h4>
-      <button class="btn btn-outline-secondary btn-sm">Editar información</button>
+      <a href="../html/select.html">
+      <button class="btn btn-primary btn-sm">Editar información</button>
+      </a>
     </div>
 
     <div class="row">
