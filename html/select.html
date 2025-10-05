@@ -4,39 +4,22 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/png" sizes="32x32" href="../assets/images/logo.jpg">
-  <title>ActiveSky</title>
+  <title>ActiveSky - Seleccionar Actividad</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet">
   <style>
     html, body {
       height: 100%;
       overflow: hidden;
-      background: #f1eded; /* Evita el scroll */
+      background: #f1eded;
     }
 
-    .map-placeholder {
+    #map {
       background-color: #e9ecef;
       height: 70vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 2px dashed #adb5bd;
-      position: relative;
-      margin-bottom: 1rem;
-    }
-
-    .profile-box {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      margin-top: 1rem;
-    }
-
-    .profile-img {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      background-color: #ced4da;
+      width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
 
     .activity-block {
@@ -56,108 +39,206 @@
       margin-bottom: 0.5rem;
     }
 
-    .flatpickr-calendar {
-      margin-top: 0.5rem;
-    }
+    /* Calendario inline */
+.flatpickr-calendar.inline {
+  display: block !important;
+  position: relative !important;
+  top: 0 !important;
+  margin-top: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+#calendar-inline {
+  margin-top: 8px;
+}
 
     .consultar-btn {
       display: flex;
       justify-content: flex-end;
       margin-bottom: 2rem;
+      gap: 12px;
     }
 
     .container {
-      height: calc(100% - 80px); /* Ajusta según la altura del navbar */
-      overflow-y: auto; /* Permite scroll interno si es necesario */
+      height: calc(100% - 80px);
+      overflow-y: auto;
       padding-bottom: 1rem;
     }
 
-    .navbar { background: #fff; border-radius: 12px; margin: 16px; }
+    .navbar {
+      background: #fff;
+      border-radius: 12px;
+      margin: 16px;
+    }
+
+    .custom-marker {
+      font-size: 28px;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .custom-marker:hover {
+      transform: scale(1.2);
+    }
+
+    .gm-style .gm-style-iw-c {
+      border-radius: 12px;
+      padding: 8px;
+    }
+
+    .spot-info {
+      padding: 8px;
+      min-width: 200px;
+    }
+
+    .spot-info h6 {
+      margin: 0 0 8px 0;
+      color: #333;
+      font-weight: bold;
+    }
+
+    .spot-info p {
+      margin: 4px 0;
+      font-size: 0.9rem;
+      color: #666;
+    }
+
+    .spot-info .btn-select-spot {
+      margin-top: 8px;
+      width: 100%;
+    }
+
+    .form-check-input:checked {
+      background-color: #0dcaf0;
+      border-color: #0dcaf0;
+    }
+
+    .selected-info {
+      background: #d1ecf1;
+      border: 2px solid #0dcaf0;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 16px;
+    }
+
+    .selected-info h6 {
+      margin-bottom: 8px;
+      color: #0c5460;
+    }
+
+    .selected-info p {
+      margin-bottom: 4px;
+      font-size: 0.95rem;
+    }
+
+    .search-box {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 5;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+
+    .pac-container {
+      z-index: 10000 !important;
+    }
   </style>
 </head>
 <body>
 
   <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg shadow-sm">
-      <div class="container-fluid">
-        <a class="navbar-brand d-flex align-items-center" href="../html/index.html">
-          <img src="../assets/images/logo.jpg" alt="Logo" width="32" height="32" class="me-2">
-          <span class="fw-bold">ActiveSky</span>
-        </a>
-        <div id="nav-auth">
-          <a href="login.html#register-modal" class="btn btn-outline-primary me-2" id="btn-registrarse">Registrarse</a>
-          <a href="login.html" class="btn btn-outline-primary">Iniciar sesión</a>
-        </div>
+  <nav class="navbar navbar-expand-lg shadow-sm">
+    <div class="container-fluid">
+      <a class="navbar-brand d-flex align-items-center" href="../html/index.html">
+        <img src="../assets/images/logo.jpg" alt="Logo" width="32" height="32" class="me-2">
+        <span class="fw-bold">ActiveSky</span>
+      </a>
+      <div id="nav-auth">
+        <a href="login.html#register-modal" class="btn btn-outline-primary me-2">Registrarse</a>
+        <a href="login.html" class="btn btn-outline-primary">Iniciar sesión</a>
       </div>
-    </nav>
+    </div>
+  </nav>
 
   <!-- Main Content -->
   <div class="container my-4">
     <div class="row">
       <!-- Sidebar -->
       <div class="col-md-4">
+        <!-- Información seleccionada -->
+        <div id="selected-info" class="selected-info" style="display: none;">
+          <h6 class="mb-2">📍 Selección actual:</h6>
+          <p class="mb-1"><strong>Actividad:</strong> <span id="info-activity">-</span></p>
+          <p class="mb-1"><strong>Fecha:</strong> <span id="info-date">-</span></p>
+          <p class="mb-1"><strong>Lugar:</strong> <span id="info-spot">-</span></p>
+          <small class="text-muted">Lat: <span id="info-lat">-</span>, Lon: <span id="info-lon">-</span></small>
+        </div>
+
+        <!-- Actividades -->
         <div class="activity-block">
-          <h6>Selecciona actividades:</h6>
+          <h6>Selecciona una actividad:</h6>
           <div class="form-check">
-            <input class="form-check-input" type="checkbox" id="ninguna">
-            <label class="form-check-label" for="ninguna">Ninguna</label>
+            <input class="form-check-input activity-checkbox" type="radio" name="activity" id="running" value="running" data-icon="🏃">
+            <label class="form-check-label" for="running">🏃 Running</label>
           </div>
           <div class="form-check">
-            <input class="form-check-input" type="checkbox" id="running">
-            <label class="form-check-label" for="running">Running</label>
+            <input class="form-check-input activity-checkbox" type="radio" name="activity" id="camping" value="camping" data-icon="⛺">
+            <label class="form-check-label" for="camping">⛺ Camping</label>
           </div>
           <div class="form-check">
-            <input class="form-check-input" type="checkbox" id="camping">
-            <label class="form-check-label" for="camping">Camping</label>
+            <input class="form-check-input activity-checkbox" type="radio" name="activity" id="hiking" value="hiking" data-icon="🥾">
+            <label class="form-check-label" for="hiking">🥾 Hiking</label>
           </div>
           <div class="form-check">
-            <input class="form-check-input" type="checkbox" id="hiking">
-            <label class="form-check-label" for="hiking">Hiking</label>
+            <input class="form-check-input activity-checkbox" type="radio" name="activity" id="cycling" value="cycling" data-icon="🚴">
+            <label class="form-check-label" for="cycling">🚴 Cycling</label>
           </div>
           <div class="form-check">
-            <input class="form-check-input" type="checkbox" id="cycling">
-            <label class="form-check-label" for="cycling">Cycling</label>
+            <input class="form-check-input activity-checkbox" type="radio" name="activity" id="fishing" value="fishing" data-icon="🎣">
+            <label class="form-check-label" for="fishing">🎣 Pesca</label>
           </div>
         </div>
 
-        <!-- Calendar Section -->
+        <!-- Calendar -->
         <div class="calendar-section">
-          <h6>Fecha seleccionada:</h6>
-          <input type="text" id="fecha" class="form-control" placeholder="Selecciona o escribe la fecha">
-        </div>
-      </div>
+  <h6>Fecha de la actividad:</h6>
+  <input type="text" id="fecha" class="form-control mb-2" placeholder="Selecciona la fecha">
+  <div id="calendar-inline"></div>
+</div>
 
-      <!-- Map Placeholder -->
+      <!-- Map -->
       <div class="col-md-8">
-        <div class="map-placeholder">
-          <span>Espacio reservado para el mapa</span>
+        <!-- Búsqueda de lugares -->
+        <div style="position: relative;">
+          <input 
+            type="text" 
+            id="search-input" 
+            class="form-control search-box" 
+            placeholder="🔍 Buscar lugar..."
+          >
+          <div id="map"></div>
         </div>
 
-        <!-- Consult Button -->
-        <div class="consultar-btn">
-          <button class="btn btn-primary" id="btn-consultar">Consultar</button>
+        <!-- Botones -->
+        <div class="consultar-btn mt-3">
+          <button class="btn btn-secondary" id="btn-reset">🔄 Limpiar Selección</button>
+          <button class="btn btn-primary" id="btn-consultar" disabled>🌦️ Consultar Clima</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Scripts -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+  <!-- Scripts en orden correcto -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-  <script>
-    flatpickr("#fecha", {
-      defaultDate: "2025-02-02",
-      minDate: "1980-01-01",
-      maxDate: "2026-12-31",
-      allowInput: true,
-      inline: true,
-      locale: "es"
-    });
-  </script>
+  
+  <!-- Google Maps API - REEMPLAZA TU_API_KEY_AQUI con tu key real -->
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBYT-hZDZszmDiZL-kd6JB-1N_7FnQpsWc&libraries=places&callback=initMap" async defer></script>
+  
+  <!-- Tu código JavaScript -->
+  <script src="../js/select.js"></script>
 </body>
-<script>
-  document.getElementById('btn-consultar').addEventListener('click', () => {
-    window.location.href = 'resultados.html';
-  });
-</script>
 </html>
